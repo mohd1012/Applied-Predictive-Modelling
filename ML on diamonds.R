@@ -2,9 +2,9 @@ library(AppliedPredictiveModeling)
 library(ggplot2)
 library(lattice)
 library(caret)
-library(e1071)
 library(plotmo)
 library(plotrix)
+library(e1071)
 library(TeachingDemos)
 library(earth)
 library(kernlab)
@@ -114,7 +114,7 @@ pls_model <- train(x = data_set[, -1], y = data_set[, 1],
 pls_model
 
 # Fit principle components regression
-tune_grid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
+tune_grid <- expand.grid(ncomp = 1:min(ncol(data_set_train) - 2, 35))
 pcr_model <- train(formula, 
                    data = data_set_train,
                    method = "pcr",

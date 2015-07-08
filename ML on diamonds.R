@@ -2,10 +2,10 @@ library(AppliedPredictiveModeling)
 library(ggplot2)
 library(lattice)
 library(caret)
-library(plotmo)
 library(plotrix)
-library(e1071)
 library(TeachingDemos)
+library(plotmo)
+library(e1071)
 library(earth)
 library(kernlab)
 library(corrplot)
@@ -57,6 +57,7 @@ linear_model
 
 testResults <- data.frame(obs = data_set_train[,1],
                           Linear_Regression = predict(linear_model))
+plot(testResults)
 
 # Fit second order linear model
 formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
@@ -110,7 +111,7 @@ tune_grid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
 pls_model <- train(x = data_set[, -1], y = data_set[, 1],
                  method = "pls",
                  tuneGrid = tune_grid,
-                 trControl = ctrl)
+                 trControl = trainControl(method = "cv"))
 pls_model
 
 # Fit principle components regression
@@ -260,8 +261,6 @@ cbImp
 
 
 # make model comparisons
-resamp <- resamples(list(linear_model = linear_model, nnet = nnet_model))
-summary(resamp)
 
 model_list <- list(linear_model = linear_model, polynomial_model = polynomial_model,
                    mars_model = mars_model, svm_model = svm_model, glm_model = glm_model,
@@ -272,6 +271,7 @@ model_list <- list(linear_model = linear_model, polynomial_model = polynomial_mo
 
 resamp <- resamples(model_list)
 summary(resamp)
+parallelPlot(resamp)
 
 linear_model
 polynomial_model
@@ -290,3 +290,8 @@ m5_model
 treebag_model
 rf_model
 cubist_model
+
+model_results <- data.frame(obs = data_set[, 4],
+                            Linear_Regression = predict(linear_model, data_set[,-4]))
+plot(model_results)
+model_prediction <- predict(glm_model, data_set[,-4])

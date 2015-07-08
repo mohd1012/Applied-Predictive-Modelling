@@ -1,5 +1,5 @@
 library(lattice)
-library(ggplo2)
+library(ggplot2)
 library(caret)
 library(nnet)
 

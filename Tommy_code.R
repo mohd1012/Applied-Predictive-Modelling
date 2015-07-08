@@ -82,4 +82,38 @@ set.seed(100)
 resamp <- resamples(model_list)
 summary(resamp)
 
+# Fit linear model
+set.seed(100)
+linear_model <- train(formula, 
+                                 data = mtcars,
+                                 method = "lm",
+                                 trControl = trainControl(method = "cv"),
+                                 preProc = c("center", "scale"),
+                                 allowParallel = FALSE)
+linear_model
+
+# Make random forests model
+mtryGrid <- data.frame(mtry = floor(seq(10, ncol(data_set_train) - 1, length = 10)))
+
+set.seed(100)
+rf_model <- train(formula, 
+                  data = mtcars,
+                  method = "rf",
+                  tuneGrid = mtryGrid,
+                  ntree = 1000,
+                  importance = TRUE,
+                  trControl = trainControl(method = "cv"))
+rf_model
+plot(rf_model)
+
+# Compare models
+model_list <- list(nnet_model_basic = nnet_model_basic, 
+                   nnet_model_tune_nopreProc = nnet_model_tune_nopreProc, 
+                   nnet_model_preProc_notune = nnet_model_preProc_notune, 
+                   nnet_model_preProc_tune = nnet_model_preProc_tune,
+                   linear_model = linear_model,
+                   rf_model = rf_model)
+set.seed(100)
+resamp <- resamples(model_list)
+summary(resamp)
 

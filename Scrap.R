@@ -1,19 +1,4 @@
 
-rs <- resamples(list("Linear Reg" = lmFit, "
-                     PLS" = plsFit,
-                     "Elastic Net" = lassoFit, 
-                     MARS = earthFit,
-                     SVM = svmRFit, 
-                     "Neural Networks" = nnetFit,
-                     CART = rpartFit, 
-                     "Cond Inf Tree" = ctreeFit,
-                     "Bagged Tree" = treebagFit,
-                     "Boosted Tree" = gbmFit,
-                     "Random Forest" = rfFit,
-                     Cubist = cbFit))
-
-#parallelPlot(rs)
-#parallelPlot(rs, metric = "Rsquared")
 
 ### Get the test set results across several models
 
@@ -41,16 +26,16 @@ library(proxy)
 
 modelPrediction <- function(x, mod, limit = 2500)
 {
-  if(x[1] < 0 | x[1] > 1) return(10^38)
-  if(x[2] < 0 | x[2] > 1) return(10^38)
-  if(x[3] < 0 | x[3] > 1) return(10^38)
-  if(x[4] < 0 | x[4] > 1) return(10^38)
-  if(x[5] < 0 | x[5] > 1) return(10^38)
-  if(x[6] < 0 | x[6] > 1) return(10^38)
+  if (x[1] < 0 | x[1] > 1) return(10 ^ 38)
+  if (x[2] < 0 | x[2] > 1) return(10 ^ 38)
+  if (x[3] < 0 | x[3] > 1) return(10 ^ 38)
+  if (x[4] < 0 | x[4] > 1) return(10 ^ 38)
+  if (x[5] < 0 | x[5] > 1) return(10 ^ 38)
+  if (x[6] < 0 | x[6] > 1) return(10 ^ 38)
   
   x <- c(x, 1 - sum(x))
   
-  if(x[7] < 0.05) return(10^38)
+  if (x[7] < 0.05) return(10 ^ 38)
   
   tmp <- as.data.frame(t(x))
   names(tmp) <- c('Cement','BlastFurnaceSlag','FlyAsh',
@@ -86,12 +71,12 @@ cbResults <- startingValues
 cbResults$Water <- NA
 cbResults$Prediction <- NA
 
-for(i in 1:nrow(cbResults))
+for (i in 1:nrow(cbResults))
 {
   results <- optim(unlist(cbResults[i,1:6]),
                    modelPrediction,
                    method = "Nelder-Mead",
-                   control=list(maxit=5000),
+                   control = list(maxit = 5000),
                    mod = cbFit)
   cbResults$Prediction[i] <- -results$value
   cbResults[i,1:6] <- results$par
@@ -107,12 +92,12 @@ nnetResults <- startingValues
 nnetResults$Water <- NA
 nnetResults$Prediction <- NA
 
-for(i in 1:nrow(nnetResults))
+for (i in 1:nrow(nnetResults))
 {
   results <- optim(unlist(nnetResults[i, 1:6,]),
                    modelPrediction,
                    method = "Nelder-Mead",
-                   control=list(maxit=5000),
+                   control = list(maxit = 5000),
                    mod = nnetFit)
   nnetResults$Prediction[i] <- -results$value
   nnetResults[i,1:6] <- results$par

@@ -116,4 +116,4 @@ model_list <- list(nnet_model_basic = nnet_model_basic,
 set.seed(100)
 resamp <- resamples(model_list)
 summary(resamp)
-
+parallelplot(resamp, metric = "Rsquared")

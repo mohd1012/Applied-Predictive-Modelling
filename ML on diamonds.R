@@ -271,7 +271,7 @@ model_list <- list(linear_model = linear_model, polynomial_model = polynomial_mo
 
 resamp <- resamples(model_list)
 summary(resamp)
-parallelPlot(resamp)
+parallelplot(resamp, metric = "Rsquared")
 
 linear_model
 polynomial_model

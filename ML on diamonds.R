@@ -273,6 +273,7 @@ resamp <- resamples(model_list)
 summary(resamp)
 parallelplot(resamp, metric = "Rsquared")
 
+# list of models setup. Couldn't get gbm working
 linear_model
 polynomial_model
 mars_model
@@ -291,6 +292,9 @@ treebag_model
 rf_model
 cubist_model
 
+
+
+
 model_results <- data.frame(obs = data_set[, 4],
                             Linear_Regression = predict(linear_model, data_set[,-4]))
 plot(model_results)
@@ -298,5 +302,6 @@ model_prediction <- predict(glm_model, data_set[,-4])
 
 plot(rf_model)
 
-rfValues <- data.frame(RF = importance(rf_model)[, "MeanDecreaseGini"],
-                       Predictor = rownames(importance(rf_model)))
+varImp(rf_model)
+importance_list <- lapply(model_list, varImp)
+           

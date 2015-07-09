@@ -295,3 +295,8 @@ model_results <- data.frame(obs = data_set[, 4],
                             Linear_Regression = predict(linear_model, data_set[,-4]))
 plot(model_results)
 model_prediction <- predict(glm_model, data_set[,-4])
+
+plot(rf_model)
+
+rfValues <- data.frame(RF = importance(rf_model)[, "MeanDecreaseGini"],
+                       Predictor = rownames(importance(rf_model)))

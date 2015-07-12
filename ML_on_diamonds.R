@@ -25,6 +25,7 @@ library(splines)
 library(parallel)
 library(gbm)
 library(Cubist)
+library(party)
 
 # create dataset and base model
 # scriptLocation()
@@ -95,7 +96,7 @@ svm_model
 
 # A line plot of the average performance. The 'scales' argument is actually an 
 # argument to xyplot that converts the x-axis to log-2 units.
-plot(svmFit, scales = list(x = list(log = 2)))
+plot(svm_model, scales = list(x = list(log = 2)))
 
 # Fit glm
 set.seed(1056)

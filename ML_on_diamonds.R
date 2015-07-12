@@ -251,7 +251,6 @@ rfImp
 mtryGrid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
                         n.trees = seq(100, 1000, by = 50),
                         n.minobsinnode = 10,
-                        verbose = FALSE,
                         shrinkage = c(0.01, 0.1))
 
 set.seed(100)
@@ -259,9 +258,9 @@ gbm_model <- train(formula,
                    data = data_set_train,
                    method = "gbm",
                    tuneGrid = mtryGrid,
+                   verbose = FALSE,
                    trControl = trainControl(method = "cv"))
 gbm_model
-
 
 # Cubist
 cbGrid <- expand.grid(committees = c(1:10, 20, 50, 75, 100), 

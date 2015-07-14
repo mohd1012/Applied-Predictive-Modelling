@@ -319,10 +319,21 @@ cubist_model
 model_results <- data.frame(obs = data_set[, 4],
                             Linear_Regression = predict(linear_model, data_set[,-4]))
 plot(model_results)
-model_prediction <- predict(gbm_model, data_set[,-4])
 
-plot(rf_model)
 
-varImp(rf_model)
-importance_list <- lapply(model_list, varImp)
+# Make a long table for all the models and the contributions of the predictors
+y <- NULL
+var_imp_table <- NULL
+for (model in model_list) {
+  y <- varImp(model)$importance
+  y[,2] <- y[,1]
+  y[,1] <- row.names(y)
+  y[,3] <- model$method
+  colnames(y) <- c("predictor", "ranking", "model")
+  row.names(y) <- NULL
+  var_imp_table <- rbind(var_imp_table, y)
+}
+rm(y)
+# For polynomial, because formula is different than the other models, will need to pull out.
+var_imp_table <- var_imp_table[-c(7:33), ]
            

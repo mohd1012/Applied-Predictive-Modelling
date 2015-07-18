@@ -320,7 +320,6 @@ model_results <- data.frame(obs = data_set[, 4],
                             Linear_Regression = predict(linear_model, data_set[,-4]))
 plot(model_results)
 
-
 # Make a long table for all the models and the contributions of the predictors
 y <- NULL
 var_imp_table <- NULL
@@ -335,5 +334,15 @@ for (model in model_list) {
 }
 rm(y)
 # For polynomial, because formula is different than the other models, will need to pull out.
-var_imp_table <- var_imp_table[-c(7:33), ]
-           
+var_imp_table_long <- var_imp_table[-grep("poly", var_imp_table$predictor), ]
+var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != "price",]
+var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
+# Some models had term not in other model, so spread fills wide table entries with NA
+var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
+
+
+p <- ggplot(var_imp_table_long, aes(predictor, model))
+p <- p + geom_tile(aes(fill = ranking), colour = "white")
+p <- p + scale_fill_gradient(low = "white", high = "steelblue")
+p
+

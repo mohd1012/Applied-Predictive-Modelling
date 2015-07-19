@@ -102,7 +102,7 @@ glm_model <- train(price ~ .,
 # Fit partial least squares
 set.seed(100)
 tune_grid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
-pls_model <- train(x = data_set[, -1], y = data_set[, 1],
+pls_model <- train(x = data_set_train[, -1], y = data_set_train[, 1],
                    method = "pls",
                    tuneGrid = tune_grid,
                    trControl = training_control)

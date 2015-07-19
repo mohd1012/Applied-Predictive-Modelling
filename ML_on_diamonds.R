@@ -44,8 +44,9 @@ featurePlot(x = data_set[,-1], y = data_set[,1])
 pairs.panels(data_set)
 corrplot(cor(data_set))
 
+Set_seed_seed <- 100
 # Create test and training sets
-set.seed(100)
+set.seed(Set_seed_seed)
 inTrain <- createDataPartition(data_set$price, p = .8)[[1]]
 data_set_train <- data_set[ inTrain, ]
 data_set_test  <- data_set[-inTrain, ]
@@ -55,7 +56,7 @@ training_control <- trainControl(method = "cv")
 
 
 # Fit linear model
-set.seed(100)
+set.seed(Set_seed_seed)
 linear_model <- train(formula, 
                       data = data_set_train,
                       method = "lm", 
@@ -64,14 +65,14 @@ linear_model <- train(formula,
 # Fit second order linear model
 formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 
-set.seed(100)
+set.seed(Set_seed_seed)
 polynomial_model <- train(formula_poly, 
                           data = data_set_train,
                           method = "lm", 
                           trControl = training_control)
 
 # Fit MARS model (Multivariate Adaptive Regression)
-set.seed(100)
+set.seed(Set_seed_seed)
 mars_model <- train(formula, 
                     data = data_set_train,
                     method = "earth",
@@ -84,7 +85,7 @@ svmTuneGrid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 
 # Fit SVM model
 # classProbs = TRUE was added since the text was written
-set.seed(100)
+set.seed(Set_seed_seed)
 svm_model <- train(price ~ .,
                    data = data_set_train,
                    method = "svmRadial",
@@ -93,14 +94,14 @@ svm_model <- train(price ~ .,
                    trControl = training_control)
 
 # Fit glm
-set.seed(100)
+set.seed(Set_seed_seed)
 glm_model <- train(price ~ .,
                    data = data_set_train,
                    method = "glm",
                    trControl = training_control)
 
 # Fit partial least squares
-set.seed(100)
+set.seed(Set_seed_seed)
 tune_grid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
 pls_model <- train(x = data_set_train[, -1], y = data_set_train[, 1],
                    method = "pls",
@@ -117,7 +118,7 @@ pcr_model <- train(formula,
 
 # Fit ridge regression
 ridgeGrid <- expand.grid(lambda = seq(0, .1, length = 15))
-set.seed(100)
+set.seed(Set_seed_seed)
 ridge_model <- train(formula, 
                      data = data_set_train,
                      method = "ridge",
@@ -128,7 +129,7 @@ ridge_model <- train(formula,
 # Fit enet model
 enetGrid <- expand.grid(lambda = c(0, 0.01, .1), 
                         fraction = seq(.05, 1, length = 20))
-set.seed(100)
+set.seed(Set_seed_seed)
 enet_model <- train(formula, 
                     data = data_set_train,
                     method = "enet",
@@ -141,7 +142,7 @@ nnetGrid <- expand.grid(decay = c(0, 0.01, .1),
                         size = c(1, 3, 5, 7, 9, 11, 13), 
                         bag = FALSE)
 
-set.seed(100)
+set.seed(Set_seed_seed)
 nnet_model <- train(formula, 
                     data = data_set_train,
                     method = "avNNet",
@@ -151,11 +152,11 @@ nnet_model <- train(formula,
                     linout = TRUE,
                     trace = FALSE,
                     MaxNWts = 13 * (ncol(data_set_train[,-1]) + 1) + 13 + 1,
-                    maxit = 1000,
+                    maxit = Set_seed_seed0,
                     allowParallel = FALSE)
 
 # knnet
-set.seed(100)
+set.seed(Set_seed_seed)
 knn_model <- train(formula, 
                    data = data_set_train,
                    method = "knn",
@@ -164,7 +165,7 @@ knn_model <- train(formula,
                    trControl = training_control)
 
 # make rpart model
-set.seed(100)
+set.seed(Set_seed_seed)
 rpart_model <- train(formula, 
                      data = data_set_train,
                      method = "rpart",
@@ -174,7 +175,7 @@ rpart_model <- train(formula,
 
 # Make conditional inference tree
 cGrid <- data.frame(mincriterion = sort(c(.95, seq(.75, .99, length = 2))))
-set.seed(100)
+set.seed(Set_seed_seed)
 ctree_model <- train(formula, 
                      data = data_set_train,
                      method = "ctree",
@@ -182,7 +183,7 @@ ctree_model <- train(formula,
                      trControl = training_control)
 
 # Make m5 model
-set.seed(100)
+set.seed(Set_seed_seed)
 m5_model <- train(formula, 
                   data = data_set_train,
                   method = "M5",
@@ -191,7 +192,7 @@ m5_model <- train(formula,
 
 
 # Make bagged tree model
-set.seed(100)
+set.seed(Set_seed_seed)
 treebag_model <- train(formula, 
                        data = data_set_train,
                        method = "treebag",
@@ -201,12 +202,12 @@ treebag_model <- train(formula,
 # Make random forests model
 mtryGrid <- data.frame(mtry = floor(seq(10, ncol(data_set_train) - 1, length = 10)))
 
-set.seed(100)
+set.seed(Set_seed_seed)
 rf_model <- train(formula, 
                   data = data_set_train,
                   method = "rf",
                   tuneGrid = mtryGrid,
-                  ntree = 1000,
+                  ntree = Set_seed_seed0,
                   importance = TRUE,
                   trControl = training_control)
 
@@ -219,7 +220,7 @@ mtryGrid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
                         n.minobsinnode = 10,
                         shrinkage = c(0.01, 0.1))
 
-set.seed(100)
+set.seed(Set_seed_seed)
 gbm_model <- train(formula, 
                    data = data_set_train,
                    method = "gbm",
@@ -231,7 +232,7 @@ gbm_model <- train(formula,
 cbGrid <- expand.grid(committees = c(1:10, 20, 50, 75, 100), 
                       neighbors = c(0, 1, 5, 9))
 
-set.seed(100)
+set.seed(Set_seed_seed)
 cubist_model <- train(formula, 
                       data = data_set_train,
                       method = "cubist",
@@ -355,4 +356,4 @@ p <- p + ggtitle("Feature contribution by kmeans clustering")
 # p <- p + geom_text(label = rownames(x))
 p
 # Some rows seem to have multiple equals. Need to check this. Causes text label to break.
-# Replace seed set with 100 with a variable so I can change all at once.
+

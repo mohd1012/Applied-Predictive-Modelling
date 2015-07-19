@@ -351,7 +351,8 @@ p <- p + theme(panel.background = element_rect(fill = 'white'),
 p
 
 p <- ggplot(data = x, aes(x = PC1, y = PC2, colour = cluster))
-p <- p + geom_point(size = 5) + scale_fill_brewer(palette = "Set2")
+p <- p + geom_point(size = 5)
+p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
 # p <- p + geom_text(label = rownames(x))
 p

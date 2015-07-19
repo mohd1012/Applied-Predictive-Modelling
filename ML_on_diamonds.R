@@ -318,7 +318,10 @@ var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
 x <- var_imp_table_wide
 rownames(x) <- var_imp_table_wide$model
 x <- x[, -1]
+heat_map_matrix <- as.matrix(x)
+heatmap(heat_map_matrix)
 
+# find the number of clusters
 # https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
 mydata <- x
 max_clusters <- 9
@@ -327,10 +330,17 @@ for (i in 2:max_clusters) wss[i] <- sum(kmeans(mydata,
                                                centers = i)$withinss)
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
-kmeans(x, 4)
+y <- kmeans(x, 4)
+y <- as.data.frame(as.factor(y$cluster))
+colnames(y) <- "cluster"
 
-x <- as.matrix(x)
-heatmap(x)
+# Find the principal components
+trans <- preProcess(x, 
+                   method = "pca")
+PC <- predict(trans, x)
+# Add to matrix
+x <- cbind(x, PC[,1:2])
+x <- cbind(x, y)
 
 p <- ggplot(var_imp_table_long, aes(predictor, model))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
@@ -340,3 +350,9 @@ p <- p + theme(panel.background = element_rect(fill = 'white'),
                panel.border = element_blank())
 p
 
+p <- ggplot(data = x, aes(x = PC1, y = PC2, colour = cluster))
+p <- p + geom_point(size = 5) + scale_fill_brewer(palette = "Set2")
+p <- p + ggtitle("Feature contribution by kmeans clustering")
+p <- p + geom_text(label = rownames(x))
+p
+# Some rows seem to have multiple equals. Need to check this.

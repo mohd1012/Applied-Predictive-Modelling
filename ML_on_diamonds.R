@@ -27,6 +27,7 @@ library(gbm)
 library(Cubist)
 library(party)
 library(tidyr)
+library(psych)
 
 # create dataset and base model
 # scriptLocation()
@@ -40,8 +41,8 @@ apply(data_set, 2, skewness)
 apply(data_set, 2, min)
 nearZeroVar(data_set)
 featurePlot(x = data_set[,-1], y = data_set[,1])
+pairs.panels(data_set_train)
 corrplot(cor(data_set))
-
 
 # Create test and training sets
 set.seed(100)
@@ -290,9 +291,10 @@ rule_fit
 model_results <- data.frame(obs = data_set[, 4],
                             Linear_Regression = predict(linear_model, data_set[,-4]))
 plot(model_results)
+
 model_prediction <- predict(gbm_model, data_set[,-4])
 
-# Examine predictor contributions accross all models.
+# Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
 y <- NULL
 var_imp_table <- NULL
@@ -313,7 +315,28 @@ var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value =
 # Some models had term not in other model, so spread fills wide table entries with NA
 var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
 
+x <- var_imp_table_wide
+rownames(x) <- var_imp_table_wide$model
+x <- x[, -1]
+
+# https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
+mydata <- x
+max_clusters <- 9
+wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
+for (i in 2:max_clusters) wss[i] <- sum(kmeans(mydata,
+                                               centers = i)$withinss)
+plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
+     ylab = "Within groups sum of squares")
+kmeans(x, 4)
+
+x <- as.matrix(x)
+heatmap(x)
+
 p <- ggplot(var_imp_table_long, aes(predictor, model))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
 p <- p + scale_fill_gradient(low = "white", high = "steelblue")
+p <- p + theme(panel.background = element_rect(fill = 'white'),
+               panel.grid.major = element_blank(),
+               panel.border = element_blank())
 p
+

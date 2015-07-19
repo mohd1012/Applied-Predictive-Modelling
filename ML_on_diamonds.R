@@ -41,7 +41,7 @@ apply(data_set, 2, skewness)
 apply(data_set, 2, min)
 nearZeroVar(data_set)
 featurePlot(x = data_set[,-1], y = data_set[,1])
-pairs.panels(data_set_train)
+pairs.panels(data_set)
 corrplot(cor(data_set))
 
 # Create test and training sets
@@ -79,7 +79,6 @@ mars_model <- train(formula,
                     trControl = training_control)
 
 # Set up SVM tunning grid
-set.seed(100)
 sigDist <- sigest(price ~ ., data = data_set_train, frac = 1)
 svmTuneGrid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 
@@ -353,6 +352,7 @@ p
 p <- ggplot(data = x, aes(x = PC1, y = PC2, colour = cluster))
 p <- p + geom_point(size = 5) + scale_fill_brewer(palette = "Set2")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
-p <- p + geom_text(label = rownames(x))
+# p <- p + geom_text(label = rownames(x))
 p
-# Some rows seem to have multiple equals. Need to check this.
+# Some rows seem to have multiple equals. Need to check this. Causes text label to break.
+# Replace seed set with 100 with a variable so I can change all at once.

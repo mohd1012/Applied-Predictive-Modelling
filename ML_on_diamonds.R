@@ -241,7 +241,7 @@ cubist_model <- train(formula,
                       tuneGrid = cbGrid,
                       trControl = training_control)
 
-
+# largely Matt's code from here on.
 # make model comparisons
 
 model_list <- list(linear_model = linear_model, polynomial_model = polynomial_model,

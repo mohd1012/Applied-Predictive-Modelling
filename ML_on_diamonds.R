@@ -369,4 +369,26 @@ p
 # varImp(enet_model) of all the models gives duplicate results.
 # Something up with the caret call?
 
+set.seed(Set_seed_seed)
+enet_model <- train(formula, 
+                    data = data_set_train,
+                    method = "enet",
+                    tuneGrid = enetGrid,
+                    trControl = training_control,
+                    preProc = c("center", "scale"))
 
+# Make conditional inference tree
+cGrid <- data.frame(mincriterion = sort(c(.95, seq(.75, .99, length = 2))))
+set.seed(Set_seed_seed)
+ctree_model <- train(formula, 
+                     data = data_set_train,
+                     method = "ctree",
+                     tuneGrid = cGrid,
+                     trControl = training_control)
+
+# ctree_model and enet_model are different outputs
+
+varImp(enet_model)
+varImp(ctree_model)
+
+# though different models, both give same varImp

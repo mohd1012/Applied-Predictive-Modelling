@@ -28,6 +28,8 @@ library(Cubist)
 library(party)
 library(tidyr)
 library(psych)
+# Lots of code from Kuhn, M., & Johnson, K. (2013).
+# Applied Predicive Modelling. New York, USA, USA: Springer.
 
 # create dataset and base model
 # scriptLocation()
@@ -321,8 +323,11 @@ x <- x[, -1]
 heat_map_matrix <- as.matrix(x)
 heatmap(heat_map_matrix)
 
-# find the number of clusters. Modification of a stackoverflow posting
+# Find the number of clusters. Modification of a stackoverflow posting
+# Ben. (2013, March 13). Cluster analysis in R: determine the optimal number of clusters.
+# Retrieved July 20, 2015, from stackoverflow:
 # https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
+
 which_cluster <- function(mydata, i) {
   sum(kmeans(mydata, centers = i)$withinss)
 }
@@ -363,5 +368,4 @@ p
 # avNNet, ctree, enet, knn, M5, pcr, ridge, svmRadial all have the same predictor contributions, PC1, PC2, cluster
 # var_imp_table has same issue (line 312)
 
-# make mydata section an apply rather than a for loop.
 

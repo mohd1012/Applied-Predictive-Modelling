@@ -314,13 +314,12 @@ rm(y)
 var_imp_table_long <- var_imp_table[-grep("poly", var_imp_table$predictor), ]
 var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != "price",]
 var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
-# Some models had term not in other model, so spread fills wide table entries with NA
+# Some models had terms not in other models, so spread fills wide table entries with NA
 var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
 
-x <- var_imp_table_wide
-rownames(x) <- var_imp_table_wide$model
-x <- x[, -1]
-heat_map_matrix <- as.matrix(x)
+rownames(var_imp_table_wide) <- var_imp_table_wide$model
+var_imp_table_wide <- var_imp_table_wide[, -1]
+heat_map_matrix <- as.matrix(var_imp_table_wide)
 heatmap(heat_map_matrix)
 
 # Find the number of clusters. Modification of a stackoverflow posting replacing loop with sapply
@@ -331,24 +330,23 @@ heatmap(heat_map_matrix)
 which_cluster <- function(mydata, i) {
   sum(kmeans(mydata, centers = i)$withinss)
 }
-mydata <- x
+mydata <- var_imp_table_wide
 max_clusters <- 9
 wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
 wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
 
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
-y <- kmeans(x, 4)
+y <- kmeans(var_imp_table_wide, 4)
 y <- as.data.frame(as.factor(y$cluster))
 colnames(y) <- "cluster"
 
 # Find the principal components
-trans <- preProcess(x, 
-                   method = "pca")
-PC <- predict(trans, x)
+trans <- preProcess(var_imp_table_wide, method = "pca")
+PC <- predict(trans, var_imp_table_wide)
 # Add to matrix
-x <- cbind(x, PC[,1:2])
-x <- cbind(x, y)
+var_imp_table_wide <- cbind(var_imp_table_wide, PC[,1:2])
+var_imp_table_wide <- cbind(var_imp_table_wide, y)
 
 p <- ggplot(var_imp_table_long, aes(predictor, model))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
@@ -358,7 +356,7 @@ p <- p + theme(panel.background = element_rect(fill = 'white'),
                panel.border = element_blank())
 p
 
-p <- ggplot(data = x, aes(x = PC1, y = PC2, colour = cluster))
+p <- ggplot(data = var_imp_table_wide, aes(x = PC1, y = PC2, colour = cluster))
 p <- p + geom_point(size = 5)
 p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")

@@ -337,16 +337,16 @@ wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = var
 
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
-y <- kmeans(var_imp_table_wide, 4)
-y <- as.data.frame(as.factor(y$cluster))
-colnames(y) <- "cluster"
+clusters <- kmeans(var_imp_table_wide, 4)
+clusters <- as.data.frame(as.factor(clusters$cluster))
+colnames(clusters) <- "cluster"
 
 # Find the principal components
 trans <- preProcess(var_imp_table_wide, method = "pca")
 PC <- predict(trans, var_imp_table_wide)
 # Add to matrix
 var_imp_table_wide <- cbind(var_imp_table_wide, PC[,1:2])
-var_imp_table_wide <- cbind(var_imp_table_wide, y)
+var_imp_table_wide <- cbind(var_imp_table_wide, clusters)
 
 p <- ggplot(var_imp_table_long, aes(predictor, model))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")

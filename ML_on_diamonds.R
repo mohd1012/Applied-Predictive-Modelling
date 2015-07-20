@@ -88,7 +88,7 @@ svmTuneGrid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 # Fit SVM model
 # classProbs = TRUE was added since the text was written
 set.seed(Set_seed_seed)
-svm_model <- train(price ~ .,
+svm_model <- train(formula,
                    data = data_set_train,
                    method = "svmRadial",
                    preProc = c("center", "scale"),
@@ -97,7 +97,7 @@ svm_model <- train(price ~ .,
 
 # Fit glm
 set.seed(Set_seed_seed)
-glm_model <- train(price ~ .,
+glm_model <- train(formula,
                    data = data_set_train,
                    method = "glm",
                    trControl = training_control)
@@ -323,7 +323,7 @@ x <- x[, -1]
 heat_map_matrix <- as.matrix(x)
 heatmap(heat_map_matrix)
 
-# Find the number of clusters. Modification of a stackoverflow posting
+# Find the number of clusters. Modification of a stackoverflow posting replacing loop with sapply
 # Ben. (2013, March 13). Cluster analysis in R: determine the optimal number of clusters.
 # Retrieved July 20, 2015, from stackoverflow:
 # https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
@@ -366,6 +366,7 @@ p <- p + ggtitle("Feature contribution by kmeans clustering")
 p
 # 
 # avNNet, ctree, enet, knn, M5, pcr, ridge, svmRadial all have the same predictor contributions, PC1, PC2, cluster
-# var_imp_table has same issue (line 312)
+# varImp(enet_model) of all the models gives duplicate results.
+# Something up with the caret call?
 
 

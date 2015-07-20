@@ -321,13 +321,16 @@ x <- x[, -1]
 heat_map_matrix <- as.matrix(x)
 heatmap(heat_map_matrix)
 
-# find the number of clusters
+# find the number of clusters. Modification of a stackoverflow posting
 # https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
+which_cluster <- function(mydata, i) {
+  sum(kmeans(mydata, centers = i)$withinss)
+}
 mydata <- x
 max_clusters <- 9
 wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
-for (i in 2:max_clusters) wss[i] <- sum(kmeans(mydata,
-                                               centers = i)$withinss)
+wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
+
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
 y <- kmeans(x, 4)
@@ -356,5 +359,9 @@ p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
 # p <- p + geom_text(label = rownames(x))
 p
-# Some rows seem to have multiple equals. Need to check this. Causes text label to break.
+# 
+# avNNet, ctree, enet, knn, M5, pcr, ridge, svmRadial all have the same predictor contributions, PC1, PC2, cluster
+# var_imp_table has same issue (line 312)
+
+# make mydata section an apply rather than a for loop.
 

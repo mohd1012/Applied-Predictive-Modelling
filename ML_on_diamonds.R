@@ -332,8 +332,8 @@ which_cluster <- function(mydata, i) {
 }
 mydata <- var_imp_table_wide
 max_clusters <- 9
-wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
-wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
+wss <- (nrow(var_imp_table_wide) - 1)*sum(apply(var_imp_table_wide,2,var))
+wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = var_imp_table_wide)
 
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
@@ -363,30 +363,3 @@ p <- p + ggtitle("Feature contribution by kmeans clustering")
 # p <- p + geom_text(label = rownames(x))
 p
 # 
-# avNNet, ctree, enet, knn, M5, pcr, ridge, svmRadial all have the same predictor contributions, PC1, PC2, cluster
-# varImp(enet_model) of all the models gives duplicate results.
-# Something up with the caret call?
-
-set.seed(Set_seed_seed)
-enet_model <- train(formula, 
-                    data = data_set_train,
-                    method = "enet",
-                    tuneGrid = enetGrid,
-                    trControl = training_control,
-                    preProc = c("center", "scale"))
-
-# Make conditional inference tree
-cGrid <- data.frame(mincriterion = sort(c(.95, seq(.75, .99, length = 2))))
-set.seed(Set_seed_seed)
-ctree_model <- train(formula, 
-                     data = data_set_train,
-                     method = "ctree",
-                     tuneGrid = cGrid,
-                     trControl = training_control)
-
-# ctree_model and enet_model are different outputs
-
-varImp(enet_model)
-varImp(ctree_model)
-
-# though different models, both give same varImp

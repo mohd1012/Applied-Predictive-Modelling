@@ -298,18 +298,18 @@ model_prediction <- predict(gbm_model, data_set[,-4])
 
 # Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
-y <- NULL
+new_row <- NULL
 var_imp_table <- NULL
 for (model in model_list) {
-  y <- varImp(model)$importance
-  y[,2] <- y[,1]
-  y[,1] <- row.names(y)
-  y[,3] <- model$method
-  colnames(y) <- c("predictor", "ranking", "model")
-  row.names(y) <- NULL
-  var_imp_table <- rbind(var_imp_table, y)
+  new_row <- varImp(model)$importance
+  new_row[,2] <- new_row[,1]
+  new_row[,1] <- row.names(new_row)
+  new_row[,3] <- model$method
+  colnames(new_row) <- c("predictor", "ranking", "model")
+  row.names(new_row) <- NULL
+  var_imp_table <- rbind(var_imp_table, new_row)
 }
-rm(y)
+rm(new_row)
 # For polynomial, because formula is different than the other models, will need to pull out.
 var_imp_table_long <- var_imp_table[-grep("poly", var_imp_table$predictor), ]
 var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != "price",]

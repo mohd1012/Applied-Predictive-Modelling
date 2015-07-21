@@ -59,7 +59,8 @@ training_control <- trainControl(method = "cv")
 
 # Fit linear model
 set.seed(Set_seed_seed)
-linear_model <- train(formula, 
+linear_model <- train(formula,
+                      importance = TRUE,
                       data = data_set_train,
                       method = "lm", 
                       trControl = training_control)
@@ -68,14 +69,15 @@ linear_model <- train(formula,
 formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 
 set.seed(Set_seed_seed)
-polynomial_model <- train(formula_poly, 
+polynomial_model <- train(formula_poly,
+                          importance = TRUE,
                           data = data_set_train,
                           method = "lm", 
                           trControl = training_control)
 
 # Fit MARS model (Multivariate Adaptive Regression)
 set.seed(Set_seed_seed)
-mars_model <- train(formula, 
+mars_model <- train(formula,
                     data = data_set_train,
                     method = "earth",
                     tuneGrid = expand.grid(degree = 1, nprune = 2:38),
@@ -89,6 +91,7 @@ svmTuneGrid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 # classProbs = TRUE was added since the text was written
 set.seed(Set_seed_seed)
 svm_model <- train(formula,
+                   importance = TRUE,
                    data = data_set_train,
                    method = "svmRadial",
                    preProc = c("center", "scale"),
@@ -106,13 +109,15 @@ glm_model <- train(formula,
 set.seed(Set_seed_seed)
 tune_grid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
 pls_model <- train(x = data_set_train[, -1], y = data_set_train[, 1],
+                   importance = TRUE,
                    method = "pls",
                    tuneGrid = tune_grid,
                    trControl = training_control)
 
 # Fit principle components regression
 tune_grid <- expand.grid(ncomp = 1:min(ncol(data_set_train) - 2, 35))
-pcr_model <- train(formula, 
+pcr_model <- train(formula,
+                   importance = TRUE,
                    data = data_set_train,
                    method = "pcr",
                    tuneGrid = tune_grid,
@@ -121,7 +126,8 @@ pcr_model <- train(formula,
 # Fit ridge regression
 ridgeGrid <- expand.grid(lambda = seq(0, .1, length = 15))
 set.seed(Set_seed_seed)
-ridge_model <- train(formula, 
+ridge_model <- train(formula,
+                     importance = TRUE,
                      data = data_set_train,
                      method = "ridge",
                      tuneGrid = ridgeGrid,
@@ -132,7 +138,8 @@ ridge_model <- train(formula,
 enetGrid <- expand.grid(lambda = c(0, 0.01, .1), 
                         fraction = seq(.05, 1, length = 20))
 set.seed(Set_seed_seed)
-enet_model <- train(formula, 
+enet_model <- train(formula,
+                    importance = TRUE,
                     data = data_set_train,
                     method = "enet",
                     tuneGrid = enetGrid,
@@ -145,7 +152,8 @@ nnetGrid <- expand.grid(decay = c(0, 0.01, .1),
                         bag = FALSE)
 
 set.seed(Set_seed_seed)
-nnet_model <- train(formula, 
+nnet_model <- train(formula,
+                    importance = TRUE,
                     data = data_set_train,
                     method = "avNNet",
                     tuneGrid = nnetGrid,
@@ -159,7 +167,8 @@ nnet_model <- train(formula,
 
 # knnet
 set.seed(Set_seed_seed)
-knn_model <- train(formula, 
+knn_model <- train(formula,
+                   importance = TRUE,
                    data = data_set_train,
                    method = "knn",
                    preProc = c("center", "scale"),
@@ -168,7 +177,7 @@ knn_model <- train(formula,
 
 # make rpart model
 set.seed(Set_seed_seed)
-rpart_model <- train(formula, 
+rpart_model <- train(formula,
                      data = data_set_train,
                      method = "rpart",
                      tuneLength = 25,
@@ -178,7 +187,7 @@ rpart_model <- train(formula,
 # Make conditional inference tree
 cGrid <- data.frame(mincriterion = sort(c(.95, seq(.75, .99, length = 2))))
 set.seed(Set_seed_seed)
-ctree_model <- train(formula, 
+ctree_model <- train(formula,
                      data = data_set_train,
                      method = "ctree",
                      tuneGrid = cGrid,
@@ -186,7 +195,7 @@ ctree_model <- train(formula,
 
 # Make m5 model
 set.seed(Set_seed_seed)
-m5_model <- train(formula, 
+m5_model <- train(formula,
                   data = data_set_train,
                   method = "M5",
                   trControl = training_control,
@@ -195,20 +204,22 @@ m5_model <- train(formula,
 
 # Make bagged tree model
 set.seed(Set_seed_seed)
-treebag_model <- train(formula, 
+treebag_model <- train(formula,
+                       importance = TRUE,
                        data = data_set_train,
                        method = "treebag",
                        nbagg = 50,
                        trControl = training_control)
 
 # Make random forests model
-mtryGrid <- data.frame(mtry = floor(seq(10, ncol(data_set_train) - 1, length = 10)))
+rfGrid <- data.frame(mtry = floor(seq(10, ncol(data_set_train) - 1, length = 10)))
 
 set.seed(Set_seed_seed)
-rf_model <- train(formula, 
+rf_model <- train(formula,
+#                 importance = TRUE,
                   data = data_set_train,
                   method = "rf",
-                  tuneGrid = mtryGrid,
+                  tuneGrid = rfGrid,
                   ntree = Set_seed_seed,
                   importance = TRUE,
                   trControl = training_control)
@@ -217,16 +228,16 @@ rf_model <- train(formula,
 # Added n.minobsinnode = 10 to expand grid. Seems this is now required, and 10 is a good default
 # but didn't find any reasonable limits so fixed at 10.
 
-mtryGrid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
+gbmGrid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
                         n.trees = seq(100, 1000, by = 50),
                         n.minobsinnode = 10,
                         shrinkage = c(0.01, 0.1))
 
 set.seed(Set_seed_seed)
-gbm_model <- train(formula, 
+gbm_model <- train(formula,
                    data = data_set_train,
                    method = "gbm",
-                   tuneGrid = mtryGrid,
+                   tuneGrid = gbmGrid,
                    verbose = FALSE,
                    trControl = training_control)
 

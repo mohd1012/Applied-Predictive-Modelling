@@ -20,12 +20,24 @@ ctree_model <- train(formula,
                      method = "ctree",
                      trControl = trainControl(method = "cv"))
 
+set.seed(Set_seed_seed)
+knn_model <- train(formula,
+                   importance = TRUE,
+                   data = data_set_train,
+                   method = "knn",
+                   preProc = c("center", "scale"),
+                   tuneGrid = data.frame(k = 1:20),
+                   trControl = training_control)
+
 varImp(enet_model)
 varImp(ctree_model)
+varImp(knn_model)
 
-# though different models, both give same varImp
-# vNNet, ctree, enet, knn, M5, pcr, ridge, svmRadial all give the same variable contributions
-# Added importance = TRUE to vNNet, enet, knn, pcr, ridge, svmRadial, rf
-# but generated errors for ctree, M5, mars, glm, rpart, gbm
-# (Something is wrong; all the RMSE metric values are missing:)
-# lm ignores importance
+# Though different models, all give same varImp.
+# In fact vNNet, ctree, enet, knn, M5, pcr, ridge, svmRadial all give the same variable contributions
+# Some will take importance = TRUE as input: vNNet, enet, knn, pcr, ridge, svmRadial, rf.
+# Others generated an error with importance = TRUE: ctree, M5, mars, glm, rpart, gbm
+# (The error is "Something is wrong; all the RMSE metric values are missing:")
+# My primary question is why do different models give the same variable importance?
+# Secondary is why some models give the "RMSE metric values are missing" error when importance = TRUE?
+

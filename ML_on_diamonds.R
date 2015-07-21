@@ -154,7 +154,7 @@ nnet_model <- train(formula,
                     linout = TRUE,
                     trace = FALSE,
                     MaxNWts = 13 * (ncol(data_set_train[,-1]) + 1) + 13 + 1,
-                    maxit = Set_seed_seed0,
+                    maxit = 100,
                     allowParallel = FALSE)
 
 # knnet
@@ -209,7 +209,7 @@ rf_model <- train(formula,
                   data = data_set_train,
                   method = "rf",
                   tuneGrid = mtryGrid,
-                  ntree = Set_seed_seed0,
+                  ntree = Set_seed_seed,
                   importance = TRUE,
                   trControl = training_control)
 

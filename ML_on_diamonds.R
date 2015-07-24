@@ -1,6 +1,7 @@
 library(AppliedPredictiveModeling)
 library(ggplot2)
 library(lattice)
+library(mgcv)
 library(caret)
 library(plotrix)
 library(TeachingDemos)
@@ -329,8 +330,7 @@ var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value =
 var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
 
 rownames(var_imp_table_wide) <- var_imp_table_wide$model
-var_imp_table_wide <- var_imp_table_wide[, -1]
-heat_map_matrix <- as.matrix(var_imp_table_wide)
+heat_map_matrix <- as.matrix(var_imp_table_wide[, -1])
 heatmap(heat_map_matrix, main = "ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial have model free impacts")
 
 # Note that ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial do not have
@@ -346,26 +346,29 @@ heatmap(heat_map_matrix, main = "ctree, avNNet, enet, knn, M5, pcr, ridge, svmRa
 which_cluster <- function(mydata, i) {
   sum(kmeans(mydata, centers = i)$withinss)
 }
-mydata <- var_imp_table_wide
+mydata <- var_imp_table_wide[,-1]
 max_clusters <- 9
-wss <- (nrow(var_imp_table_wide) - 1)*sum(apply(var_imp_table_wide,2,var))
-wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = var_imp_table_wide)
+wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
+wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
 
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
-clusters <- kmeans(var_imp_table_wide, 4)
+clusters <- kmeans(var_imp_table_wide[,-1], 4)
 clusters <- as.data.frame(as.factor(clusters$cluster))
 colnames(clusters) <- "cluster"
 
 # Find the principal components
-trans <- preProcess(var_imp_table_wide, method = "pca")
-PC <- predict(trans, var_imp_table_wide)
+trans <- preProcess(var_imp_table_wide[,-1], method = "pca")
+PC <- predict(trans, var_imp_table_wide[,-1])
 # Add to matrix
 var_imp_table_wide <- cbind(var_imp_table_wide, PC[,1:2])
 var_imp_table_wide <- cbind(var_imp_table_wide, clusters)
 var_imp_table_wide <- var_imp_table_wide[order(var_imp_table_wide$cluster),]
 # Join wide table clusters to long table
 # look up model in wide, get cluster, add to long
+
+var_imp_table_long <- merge(var_imp_table_wide[,c("model", "cluster")], var_imp_table_long, by = "model")
+var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$cluster),]
 
 p <- ggplot(var_imp_table_long, aes(predictor, model))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")

@@ -331,7 +331,12 @@ var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
 rownames(var_imp_table_wide) <- var_imp_table_wide$model
 var_imp_table_wide <- var_imp_table_wide[, -1]
 heat_map_matrix <- as.matrix(var_imp_table_wide)
-heatmap(heat_map_matrix)
+heatmap(heat_map_matrix, main = "ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial have model free impacts")
+
+# Note that ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial do not have
+# variable impacts defined, so use a model free method and will all report
+# the same impacts. rpart, pls, lm, glm, earth, gbm, treebag, cubist and 
+# rf have defined methods.
 
 # Find the number of clusters. Modification of a stackoverflow posting replacing loop with sapply
 # Ben. (2013, March 13). Cluster analysis in R: determine the optimal number of clusters.
@@ -358,6 +363,9 @@ PC <- predict(trans, var_imp_table_wide)
 # Add to matrix
 var_imp_table_wide <- cbind(var_imp_table_wide, PC[,1:2])
 var_imp_table_wide <- cbind(var_imp_table_wide, clusters)
+var_imp_table_wide <- var_imp_table_wide[order(var_imp_table_wide$cluster),]
+# Join wide table clusters to long table
+# look up model in wide, get cluster, add to long
 
 p <- ggplot(var_imp_table_long, aes(predictor, model))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
@@ -365,12 +373,17 @@ p <- p + scale_fill_gradient(low = "white", high = "steelblue")
 p <- p + theme(panel.background = element_rect(fill = 'white'),
                panel.grid.major = element_blank(),
                panel.border = element_blank())
+p <- p + ggtitle("ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial use a model free method")
 p
 
 p <- ggplot(data = var_imp_table_wide, aes(x = PC1, y = PC2, colour = cluster))
 p <- p + geom_point(size = 5)
 p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
+
 # p <- p + geom_text(label = rownames(x))
 p
-# 
+#
+## Sort first p charts by hcluster
+## Add labels to second p chart
+

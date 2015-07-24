@@ -42,3 +42,7 @@ varImp(knn_model)
 # My question is why do different models give the same variable importance?
 # This seems wrong, but I can't see what I've done wrong.
 
+# Those methods don't have importance scores implemented so you get model-free measures. I can add one for enet based on the coefficients but knn and ctree have no obvious methods. 
+
+
+

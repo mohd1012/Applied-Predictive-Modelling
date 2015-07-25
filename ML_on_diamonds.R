@@ -369,8 +369,15 @@ var_imp_table_wide <- var_imp_table_wide[order(var_imp_table_wide$cluster),]
 # look up model in wide, get cluster, add to long
 var_imp_table_long <- merge(var_imp_table_wide[,c("model", "cluster")], var_imp_table_long, by = "model")
 var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$cluster),]
-var_imp_table_long$model <- factor(var_imp_table_long$model, levels = var_imp_table_long$model[order(var_imp_table_long$cluster,var_imp_table_long$model)], ordered = TRUE)
+# Need to order model by cluster number do group together in plots
+# var_imp_table_long$model <- factor(var_imp_table_long$model, 
+#                                    levels = var_imp_table_long$model[order(var_imp_table_long$cluster,var_imp_table_long$model)],
+#                                    ordered = TRUE)
 
+with(var_imp_table_long,
+     model <- factor(model, levels = model[order(cluster,model)], ordered = TRUE))
+
+# maybe use with for above line to shorten it
 p <- ggplot(var_imp_table_long, aes(x = predictor, y = model, cluster))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
 p <- p + scale_fill_gradient(low = "white", high = "steelblue")
@@ -388,6 +395,5 @@ p <- p + ggtitle("Feature contribution by kmeans clustering")
 # p <- p + geom_text(label = rownames(x))
 p
 #
-## Sort first p charts by hcluster
-## Add labels to second p chart
+## Add labels using model names to second p chart
 

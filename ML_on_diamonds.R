@@ -325,6 +325,7 @@ rm(new_row)
 # For polynomial, because formula is different than the other models, will need to pull out.
 var_imp_table_long <- var_imp_table[-grep("poly", var_imp_table$predictor), ]
 var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != "price",]
+var_imp_table_long$model <- as.factor(var_imp_table_long$model)
 var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
 # Some models had terms not in other models, so spread fills wide table entries with NA
 var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0
@@ -370,7 +371,7 @@ var_imp_table_long <- merge(var_imp_table_wide[,c("model", "cluster")], var_imp_
 var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$cluster),]
 
 
-x <- as.factor(var_imp_table_long$model)
+reorder(model, cluster)
 p <- ggplot(var_imp_table_long, aes(x = predictor, y = model, cluster))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
 p <- p + scale_fill_gradient(low = "white", high = "steelblue")

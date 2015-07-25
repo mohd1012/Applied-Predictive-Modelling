@@ -366,11 +366,12 @@ var_imp_table_wide <- cbind(var_imp_table_wide, clusters)
 var_imp_table_wide <- var_imp_table_wide[order(var_imp_table_wide$cluster),]
 # Join wide table clusters to long table
 # look up model in wide, get cluster, add to long
-
 var_imp_table_long <- merge(var_imp_table_wide[,c("model", "cluster")], var_imp_table_long, by = "model")
 var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$cluster),]
 
-p <- ggplot(var_imp_table_long, aes(predictor, model))
+
+x <- as.factor(var_imp_table_long$model)
+p <- ggplot(var_imp_table_long, aes(x = predictor, y = model, cluster))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
 p <- p + scale_fill_gradient(low = "white", high = "steelblue")
 p <- p + theme(panel.background = element_rect(fill = 'white'),

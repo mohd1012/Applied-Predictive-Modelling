@@ -266,6 +266,8 @@ model_list <- list(linear_model = linear_model, polynomial_model = polynomial_mo
 resamp <- resamples(model_list)
 summary(resamp)
 parallelplot(resamp, metric = "Rsquared")
+bwplot(resamp, metric = "Rsquared")
+dotplot(resamp, metric = "Rsquared")
 
 # list of models setup
 linear_model
@@ -396,4 +398,5 @@ p <- p + ggtitle("Feature contribution by kmeans clustering")
 p
 #
 ## Add labels using model names to second p chart
+
 

@@ -389,12 +389,11 @@ p <- p + theme(panel.background = element_rect(fill = 'white'),
 p <- p + ggtitle("ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial use a model free method")
 p
 
-p <- ggplot(data = var_imp_table_wide, aes(x = PC1, y = PC2, colour = cluster))
+p <- ggplot(data = var_imp_table_wide, aes(x = PC1, y = PC2, colour = cluster, label = rownames(var_imp_table_wide)))
 p <- p + geom_point(size = 5)
 p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
-
-# p <- p + geom_text(label = rownames(x))
+p <- p + geom_text(position = position_jitter(height = 0.5, width = 0.5), hjust = 0, vjust = -1)
 p
 #
 ## Add labels using model names to second p chart

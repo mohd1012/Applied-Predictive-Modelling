@@ -357,6 +357,14 @@ wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = myd
 plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
      ylab = "Within groups sum of squares")
 clusters <- kmeans(var_imp_table_wide[,-1], 4)
+barplot(t(clusters$centers), beside = TRUE, xlab = "cluster", ylab = "value")
+# build code to do ggplot2 version of barplot. Not checked yet.
+var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$predictor),]
+p <- ggplot(data = var_imp_table_long, aes(x = predictor, y = ranking))
+p <- p + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~cluster)
+p <- p + ggtitle("feature contributions to clusters")
+p
+
 clusters <- as.data.frame(as.factor(clusters$cluster))
 colnames(clusters) <- "cluster"
 
@@ -395,8 +403,6 @@ p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
 p <- p + geom_text(position = position_jitter(height = 0.5, width = 0.5), hjust = 0, vjust = -1)
 p
-#
-## Add labels using model names to second p chart
 
 # code for feature selection. Methods supported are below:
   # caretFuncs - exist for
@@ -410,7 +416,7 @@ p
 
 feature_selection_control <- rfeControl(functions = rfFuncs)
 ctrl <- rfeControl(functions = lmFuncs,
-                   method = "cv",
+                   method = training_control,
                    repeats = 5,
                    verbose = FALSE)
 

@@ -30,6 +30,13 @@ library(Cubist)
 library(party)
 library(tidyr)
 library(psych)
+library(gam)
+
+# To do -
+# Replace wides with longs
+# Give all tuneGrids the same name
+# Check best CV method
+
 # Lots of code from Kuhn, M., & Johnson, K. (2013).
 # Applied Predicive Modelling. New York, USA, USA: Springer.
 
@@ -46,7 +53,6 @@ apply(data_set, 2, min)
 nearZeroVar(data_set)
 featurePlot(x = data_set[,-1], y = data_set[,1])
 pairs.panels(data_set)
-corrplot(cor(data_set))
 
 Set_seed_seed <- 100
 # Create test and training sets

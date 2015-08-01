@@ -1,6 +1,7 @@
 library(AppliedPredictiveModeling)
 library(ggplot2)
 library(lattice)
+library(nlme)
 library(mgcv)
 library(caret)
 library(plotrix)

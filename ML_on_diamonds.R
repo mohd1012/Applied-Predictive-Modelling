@@ -36,6 +36,7 @@ library(gam)
 # Replace wides with longs
 # Give all tuneGrids the same name
 # Check best CV method
+# in train control add "allowParallel = FALSE"
 
 # Lots of code from Kuhn, M., & Johnson, K. (2013).
 # Applied Predicive Modelling. New York, USA, USA: Springer.

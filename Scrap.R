@@ -1,7 +1,7 @@
 # Fit lowess
 library(gam)
 
-tuneGrid <- expand.grid(span = seq(1, 5, length = 15), degree = seq(1, 5, length = 10))
+tuneGrid <- expand.grid(span = seq(1, 5, length = 5), degree = seq(1, 5, length = 5))
 set.seed(Set_seed_seed)
 GAM_model <- train(formula,
                       importance = TRUE,

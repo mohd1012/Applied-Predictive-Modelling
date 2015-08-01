@@ -1,5 +1,12 @@
 # Fit lowess
+library(splines)
+library(foreach)
 library(gam)
+library(lattice)
+library(ggplot2)
+library(caret)
+# crashes when I uncomment the tuneGrid = tuneGrid line. Maybe impossible values?
+
 
 tuneGrid <- expand.grid(span = seq(1, 5, length = 5), degree = seq(1, 5, length = 5))
 set.seed(Set_seed_seed)
@@ -7,7 +14,7 @@ GAM_model <- train(formula,
                       importance = TRUE,
                       data = data_set_train,
                       method = "gamLoess", 
-                      tuneGrid = tuneGrid,
+#                      tuneGrid = tuneGrid,
                       trControl = training_control)
 
 

@@ -24,6 +24,7 @@ GAM_model <- train(formula,
 # http://topepo.github.io/caret/Generalized_Additive_Model.html
 # Tuning Parameters: span (Span), degree (Degree)
 
+########################################################
 # Regression diagnostics
 n <- predict(GAM_model, data_set)
 # Tuning Parameters: span (Span), degree (Degree)
@@ -51,3 +52,47 @@ plot(D)
 hist(D)
 qqnorm(D)
 plot(n - data_set$price)
+
+
+###################################################
+# Blog postings
+# http://freakonometrics.hypotheses.org/20002
+library(ggplot2)
+n <- 500
+set.seed(1)
+X <- rnorm(n)
+ma <- 10 - (X + 1.5) ^ 2*2
+mb <- -10 + (X - 1.5) ^ 2*2
+M <- cbind(ma,mb)
+set.seed(1)
+Z <- sample(1:2,size = n,replace = TRUE)
+Y <- ma*(Z == 1) + mb*(Z == 2) + rnorm(n)*5
+df <- data.frame(Z = as.factor(Z),X,Y)
+p <- ggplot(data = df, aes(x = X, y = Y, color = Z))
+p <- p + geom_point()
+p
+df1 = training = df[1:300,]
+df2 = testing  = df[301:500,]
+library(rpart)
+fit = rpart(Z ~ X + Y, data = df1)
+pred = function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
+vx = seq(-3,3,length = 101)
+vy = seq(-25,25,length = 101)
+
+z = NULL
+for (i in 1:length(vx)) {
+  for (j in 1:length(vy)) {
+    z_pred <- pred(vx[i],vy[j])
+    new_row <- cbind(vx[i],vy[j], z_pred)
+    z <- rbind(z, new_row)
+  }
+}
+z <- as.data.frame(z)
+colnames(z) <- c("vx", "vy", "pred_z")
+
+p <- ggplot()
+p <- p + geom_tile(data = z, aes(x = vx, y = vy, color = pred_z))
+p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z, shape = Z),
+                    pch = 21, size = 5, colour = NA)
+p
+

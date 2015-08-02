@@ -35,8 +35,8 @@ library(gam)
 # To do -
 # Replace wides with longs
 # Give all tuneGrids the same name
-# Check best CV method
 # in train control add "allowParallel = FALSE"
+# replace all plots with ggplot2
 
 # Lots of code from Kuhn, M., & Johnson, K. (2013).
 # Applied Predicive Modelling. New York, USA, USA: Springer.
@@ -349,7 +349,9 @@ heatmap(heat_map_matrix, main = "ctree, avNNet, enet, knn, M5, pcr, ridge, svmRa
 # the same impacts. rpart, pls, lm, glm, earth, gbm, treebag, cubist and 
 # rf have defined methods.
 
-# Find the number of clusters. Modification of a stackoverflow posting replacing loop with sapply
+# Find the number of clusters.
+# Modification of a stackoverflow posting replacing loop with sapply
+# and converting to ggplot2
 # Ben. (2013, March 13). Cluster analysis in R: determine the optimal number of clusters.
 # Retrieved July 20, 2015, from stackoverflow:
 # https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
@@ -362,8 +364,12 @@ max_clusters <- 9
 wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
 wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
 
-plot(1:max_clusters, wss, type = "b", xlab = "Number of Clusters",
-     ylab = "Within groups sum of squares")
+wss <- cbind(1:max_clusters, wss)
+colnames(wss) <- c("Number of clusters", "Within group SS")
+wss <- as.data.frame(wss)
+p <- ggplot(data = wss, aes(x = wss$`Number of clusters`, y = wss$`Within group SS`))
+p <- p + geom_point()
+p
 clusters <- kmeans(var_imp_table_wide[,-1], 4)
 # barplot(t(clusters$centers), beside = TRUE, xlab = "cluster", ylab = "value")
 # build code to do ggplot2 version of barplot. Not checked yet.

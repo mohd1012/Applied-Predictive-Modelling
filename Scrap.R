@@ -76,9 +76,13 @@ p <- p + geom_point()
 p
 df1 = training = df[1:300,]
 df2 = testing  = df[301:500,]
-library(rpart)
-fit <- rpart(Z ~ X + Y, data = df1)
-pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
+
+# library(rpart)
+# fit <- rpart(Z ~ X + Y, data = df1)
+# pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
+library(randomForest)
+fit <- randomForest(Z ~ X + Y, data = df1)
+pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y), type = "prob")[,2]
 vx <- seq(-3,3,length = 101)
 vy <- seq(-25,25,length = 101)
 

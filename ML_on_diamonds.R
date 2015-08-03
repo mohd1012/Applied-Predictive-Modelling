@@ -133,30 +133,30 @@ pcr_model <- train(formula,
                    trControl = training_control)
 
 # Fit ridge regression
-ridgeGrid <- expand.grid(lambda = seq(0, .1, length = 15))
+tune_grid <- expand.grid(lambda = seq(0, .1, length = 15))
 set.seed(Set_seed_seed)
 ridge_model <- train(formula,
                      importance = TRUE,
                      data = data_set_train,
                      method = "ridge",
-                     tuneGrid = ridgeGrid,
+                     tuneGrid = tune_grid,
                      trControl = training_control,
                      preProc = c("center", "scale"))
 
 # Fit enet model
-enetGrid <- expand.grid(lambda = c(0, 0.01, .1), 
+tune_grid <- expand.grid(lambda = c(0, 0.01, .1), 
                         fraction = seq(.05, 1, length = 20))
 set.seed(Set_seed_seed)
 enet_model <- train(formula,
                     importance = TRUE,
                     data = data_set_train,
                     method = "enet",
-                    tuneGrid = enetGrid,
+                    tuneGrid = tune_grid,
                     trControl = training_control,
                     preProc = c("center", "scale"))
 
 # Fit neural net
-nnetGrid <- expand.grid(decay = c(0, 0.01, .1), 
+tune_grid <- expand.grid(decay = c(0, 0.01, .1), 
                         size = c(1, 3, 5, 7, 9, 11, 13), 
                         bag = FALSE)
 
@@ -165,7 +165,7 @@ nnet_model <- train(formula,
                     importance = TRUE,
                     data = data_set_train,
                     method = "avNNet",
-                    tuneGrid = nnetGrid,
+                    tuneGrid = tune_grid,
                     trControl = training_control,
                     preProc = c("center", "scale"),
                     linout = TRUE,
@@ -194,12 +194,12 @@ rpart_model <- train(formula,
 
 
 # Make conditional inference tree
-cGrid <- data.frame(mincriterion = sort(c(.95, seq(.75, .99, length = 2))))
+tune_grid <- data.frame(mincriterion = sort(c(.95, seq(.75, .99, length = 2))))
 set.seed(Set_seed_seed)
 ctree_model <- train(formula,
                      data = data_set_train,
                      method = "ctree",
-                     tuneGrid = cGrid,
+                     tuneGrid = tune_grid,
                      trControl = training_control)
 
 # Make m5 model
@@ -221,14 +221,14 @@ treebag_model <- train(formula,
                        trControl = training_control)
 
 # Make random forests model
-rfGrid <- data.frame(mtry = floor(seq(10, ncol(data_set_train) - 1, length = 10)))
+tune_grid <- data.frame(mtry = floor(seq(10, ncol(data_set_train) - 1, length = 10)))
 
 set.seed(Set_seed_seed)
 rf_model <- train(formula,
 #                 importance = TRUE,
                   data = data_set_train,
                   method = "rf",
-                  tuneGrid = rfGrid,
+                  tuneGrid = tune_grid,
                   ntree = Set_seed_seed,
                   importance = TRUE,
                   trControl = training_control)
@@ -237,7 +237,7 @@ rf_model <- train(formula,
 # Added n.minobsinnode = 10 to expand grid. Seems this is now required, and 10 is a good default
 # but didn't find any reasonable limits so fixed at 10.
 
-gbmGrid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
+tune_grid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
                         n.trees = seq(100, 1000, by = 50),
                         n.minobsinnode = 10,
                         shrinkage = c(0.01, 0.1))
@@ -246,19 +246,19 @@ set.seed(Set_seed_seed)
 gbm_model <- train(formula,
                    data = data_set_train,
                    method = "gbm",
-                   tuneGrid = gbmGrid,
+                   tuneGrid = tune_grid,
                    verbose = FALSE,
                    trControl = training_control)
 
 # Cubist
-cbGrid <- expand.grid(committees = c(1:10, 20, 50, 75, 100), 
+tune_grid <- expand.grid(committees = c(1:10, 20, 50, 75, 100), 
                       neighbors = c(0, 1, 5, 9))
 
 set.seed(Set_seed_seed)
 cubist_model <- train(formula, 
                       data = data_set_train,
                       method = "cubist",
-                      tuneGrid = cbGrid,
+                      tuneGrid = tune_grid,
                       trControl = training_control)
 
 # largely Matt's code from here on.

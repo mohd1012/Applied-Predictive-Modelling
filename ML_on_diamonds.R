@@ -355,22 +355,27 @@ heatmap(heat_map_matrix, main = "ctree, avNNet, enet, knn, M5, pcr, ridge, svmRa
 # Retrieved July 20, 2015, from stackoverflow:
 # https://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
 
-which_cluster <- function(mydata, i) {
-  sum(kmeans(mydata, centers = i)$withinss)
+find_number_of_clusters <- function(df) {
+  which_cluster <- function(mydata, i) {
+    sum(kmeans(mydata, centers = i)$withinss)
+  }
+  mydata <- var_imp_table_wide[,-1]
+  max_clusters <- 9
+  wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
+  wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
+  wss <- cbind(1:max_clusters, wss)
+  colnames(wss) <- c("Number of clusters", "Within group SS")
+  wss <- as.data.frame(wss)
+  wss <<- wss
+  p <- ggplot(data = wss, aes(x = wss$`Number of clusters`, y = wss$`Within group SS`))
+  p <- p + geom_point()
+  return(p)
 }
-mydata <- var_imp_table_wide[,-1]
-max_clusters <- 9
-wss <- (nrow(mydata) - 1)*sum(apply(mydata,2,var))
-wss[2:max_clusters] <- sapply(2:max_clusters,  FUN = which_cluster, mydata = mydata)
-
-wss <- cbind(1:max_clusters, wss)
-colnames(wss) <- c("Number of clusters", "Within group SS")
-wss <- as.data.frame(wss)
-p <- ggplot(data = wss, aes(x = wss$`Number of clusters`, y = wss$`Within group SS`))
-p <- p + geom_point()
-p
+df <- var_imp_table_wide[,-1]
+plot(find_number_of_clusters(df = df))
 clusters <- kmeans(var_imp_table_wide[,-1], 4)
-# barplot(t(clusters$centers), beside = TRUE, xlab = "cluster", ylab = "value")
+
+# barplot(t(clusters$centers)), beside = TRUE, xlab = "cluster", ylab = "value")
 # build code to do ggplot2 version of barplot. Not checked yet.
 
 clusters <- as.data.frame(as.factor(clusters$cluster))

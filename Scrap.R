@@ -77,12 +77,12 @@ p
 df1 = training = df[1:300,]
 df2 = testing  = df[301:500,]
 library(rpart)
-fit = rpart(Z ~ X + Y, data = df1)
-pred = function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
-vx = seq(-3,3,length = 101)
-vy = seq(-25,25,length = 101)
+fit <- rpart(Z ~ X + Y, data = df1)
+pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
+vx <- seq(-3,3,length = 101)
+vy <- seq(-25,25,length = 101)
 
-z = NULL
+z <- NULL
 for (i in 1:length(vx)) {
   for (j in 1:length(vy)) {
     z_pred <- pred(vx[i],vy[j])

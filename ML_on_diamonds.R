@@ -34,7 +34,6 @@ library(gam)
 
 # To do -
 # Replace wides with longs
-# Give all tuneGrids the same name
 # in train control add "allowParallel = FALSE"
 # replace all plots with ggplot2
 

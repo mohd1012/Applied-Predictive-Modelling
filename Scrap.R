@@ -56,7 +56,10 @@ plot(n - data_set$price)
 
 ###################################################
 # Blog postings
-# http://freakonometrics.hypotheses.org/20002
+# Charpentier, A. (2015, July 21). Choosing a classifier.
+# Retrieved July 31, 2015
+# from Freakonometrics: http://freakonometrics.hypotheses.org/20002
+###################################################
 library(ggplot2)
 n <- 500
 set.seed(1)

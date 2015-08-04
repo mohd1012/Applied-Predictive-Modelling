@@ -277,24 +277,24 @@ bwplot(resamp, metric = "Rsquared")
 dotplot(resamp, metric = "Rsquared")
 
 # list of models setup
-linear_model
-polynomial_model
-mars_model
-svm_model
-glm_model
-pls_model
-pcr_model
-ridge_model
-enet_model
-nnet_model
-knn_model
-rpart_model
-ctree_model
-m5_model
-treebag_model
-gbm_model
-rf_model
-cubist_model
+# linear_model
+# polynomial_model
+# mars_model
+# svm_model
+# glm_model
+# pls_model
+# pcr_model
+# ridge_model
+# enet_model
+# nnet_model
+# knn_model
+# rpart_model
+# ctree_model
+# m5_model
+# treebag_model
+# gbm_model
+# rf_model
+# cubist_model
 
 # Some customised model plots:
 plot(rpart_model, scales = list(x = list(log = 10)))
@@ -320,7 +320,7 @@ model_prediction <- predict(gbm_model, data_set[,-4])
 # Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
 new_row <- NULL
-var_imp_table <- NULL
+var_imp_table_long <- NULL
 for (model in model_list) {
   new_row <- varImp(model)$importance
   new_row[,2] <- new_row[,1]
@@ -328,11 +328,11 @@ for (model in model_list) {
   new_row[,3] <- model$method
   colnames(new_row) <- c("predictor", "ranking", "model")
   row.names(new_row) <- NULL
-  var_imp_table <- rbind(var_imp_table, new_row)
+  var_imp_table_long <- rbind(var_imp_table_long, new_row)
 }
 rm(new_row)
 # For polynomial, because formula is different than the other models, will need to pull out.
-var_imp_table_long <- var_imp_table[-grep("poly", var_imp_table$predictor), ]
+var_imp_table_long <- var_imp_table_long[-grep("poly", var_imp_table_long$predictor), ]
 var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != "price",]
 var_imp_table_long$model <- as.factor(var_imp_table_long$model)
 var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
@@ -374,10 +374,6 @@ find_number_of_clusters <- function(df) {
 df <- var_imp_table_wide[,-1]
 plot(find_number_of_clusters(df = df))
 clusters <- kmeans(var_imp_table_wide[,-1], 4)
-
-# barplot(t(clusters$centers)), beside = TRUE, xlab = "cluster", ylab = "value")
-# build code to do ggplot2 version of barplot. Not checked yet.
-
 clusters <- as.data.frame(as.factor(clusters$cluster))
 colnames(clusters) <- "cluster"
 
@@ -393,15 +389,14 @@ var_imp_table_wide <- var_imp_table_wide[order(var_imp_table_wide$cluster),]
 var_imp_table_long <- merge(var_imp_table_wide[,c("model", "cluster")], var_imp_table_long, by = "model")
 var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$cluster),]
 var_imp_table_long <- var_imp_table_long[order(var_imp_table_long$predictor),]
+with(var_imp_table_long,
+     model <- factor(model, levels = model[order(cluster,model)], ordered = TRUE))
+
 p <- ggplot(data = var_imp_table_long, aes(x = predictor, y = ranking))
 p <- p + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~cluster)
 p <- p + ggtitle("feature contributions to clusters")
 p
 
-with(var_imp_table_long,
-     model <- factor(model, levels = model[order(cluster,model)], ordered = TRUE))
-
-# maybe use with for above line to shorten it
 p <- ggplot(var_imp_table_long, aes(x = predictor, y = model, cluster))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
 p <- p + scale_fill_gradient(low = "white", high = "steelblue")

@@ -17,7 +17,7 @@ set.seed(Set_seed_seed)
 GAM_model <- train(formula,
                       data = data_set,
                       method = "gamLoess", 
-                      # tuneGrid = tune_grid
+                      tuneGrid = tune_grid,
                       trControl = training_control
                    )
 
@@ -62,12 +62,12 @@ plot(n - data_set$price)
 ###################################################
 library(ggplot2)
 n <- 500
-set.seed(1)
+set.seed(10)
 X <- rnorm(n)
 ma <- 10 - (X + 1.5) ^ 2*2
 mb <- -10 + (X - 1.5) ^ 2*2
 M <- cbind(ma,mb)
-set.seed(1)
+set.seed(10)
 Z <- sample(1:2,size = n,replace = TRUE)
 Y <- ma*(Z == 1) + mb*(Z == 2) + rnorm(n)*5
 df <- data.frame(Z = as.factor(Z),X,Y)
@@ -98,8 +98,11 @@ z <- as.data.frame(z)
 colnames(z) <- c("vx", "vy", "pred_z")
 
 p <- ggplot()
-p <- p + geom_tile(data = z, aes(x = vx, y = vy, color = pred_z))
+p <- p + geom_tile(data = z, aes(x = vx, y = vy, color = pred_z)) 
+# p <- p + scale_colour_continuous(low = "red", high = "blue")
+p <- p + scale_colour_continuous(low = "white", high = "steelblue")
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z, shape = Z),
                     pch = 21, size = 5, colour = NA)
+p <- p + theme_bw()
 p
 

@@ -33,7 +33,6 @@ library(psych)
 library(gam)
 
 # To do -
-# in train control add "allowParallel = FALSE"
 # replace all plots with ggplot2
 
 # Lots of code from Kuhn, M., & Johnson, K. (2013).
@@ -43,6 +42,7 @@ library(gam)
 # scriptLocation()
 # C:\Program Files\R\R-3.2.1\library\AppliedPredictiveModeling\chapters
 
+# Following segment is where you customise for a particular dataset
 data_set <- diamonds[, c(1, 5, 6, 7, 8, 9, 10)]
 data_set <- data_set[1:1000,]
 response <- "price"
@@ -54,7 +54,7 @@ formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 apply(data_set, 2, skewness)
 apply(data_set, 2, min)
 nearZeroVar(data_set)
-featurePlot(x = data_set[,-1], y = data_set[,1])
+featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
 pairs.panels(data_set)
 
 Set_seed_seed <- 100
@@ -267,33 +267,12 @@ model_list$cubist_model <- train(formula,
                       tuneGrid = tune_grid,
                       trControl = training_control)
 
-# 
-
+# Plots to compare the models
 resamp <- resamples(model_list)
 summary(resamp)
 parallelplot(resamp, metric = "Rsquared")
 bwplot(resamp, metric = "Rsquared")
 dotplot(resamp, metric = "Rsquared")
-
-# list of models setup
-# linear_model
-# polynomial_model
-# mars_model
-# svm_model
-# glm_model
-# pls_model
-# pcr_model
-# ridge_model
-# enet_model
-# nnet_model
-# knn_model
-# rpart_model
-# ctree_model
-# m5_model
-# treebag_model
-# gbm_model
-# rf_model
-# cubist_model
 
 # Some customised model plots:
 plot(rpart_model, scales = list(x = list(log = 10)))

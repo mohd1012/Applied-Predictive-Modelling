@@ -277,6 +277,7 @@ model$cubist_model <- train(formula,
 #                    rpart_model = rpart_model, ctree_model = ctree_model, m5_model = m5_model,
 #                    treebag_model = treebag_model, rf_model = rf_model, gbm_model = gbm_model, cubist_model = cubist_model)
 
+
 resamp <- resamples(model_list)
 summary(resamp)
 parallelplot(resamp, metric = "Rsquared")

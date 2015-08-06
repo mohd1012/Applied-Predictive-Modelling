@@ -45,7 +45,10 @@ library(gam)
 
 data_set <- diamonds[, c(1, 5, 6, 7, 8, 9, 10)]
 data_set <- data_set[1:1000,]
+response <- "price"
+response_col <- grep(pattern = response, x = colnames(data_set))
 formula <- price ~ carat + depth + table + x + y + z
+formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 
 # Examine data
 apply(data_set, 2, skewness)
@@ -57,7 +60,7 @@ pairs.panels(data_set)
 Set_seed_seed <- 100
 # Create test and training sets
 set.seed(Set_seed_seed)
-inTrain <- createDataPartition(data_set$price, p = .8)[[1]]
+inTrain <- createDataPartition(data_set[, response_col], p = .8)[[1]]
 data_set_train <- data_set[ inTrain, ]
 data_set_test  <- data_set[-inTrain, ]
 
@@ -80,8 +83,6 @@ model_list$linear_model <- train(formula,
                       trControl = training_control)
 
 # Fit second order linear model
-formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
-
 set.seed(Set_seed_seed)
 model_list$polynomial_model <- train(formula_poly,
                           # importance = TRUE,
@@ -98,7 +99,7 @@ model_list$mars_model <- train(formula,
                     trControl = training_control)
 
 # Set up SVM tunning grid
-sigDist <- sigest(price ~ ., data = data_set_train, frac = 1)
+sigDist <- sigest(data_set_train[, response_col] ~ ., data = data_set_train, frac = 1)
 TuneGrid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 
 # Fit SVM model
@@ -331,7 +332,7 @@ for (model in model_list) {
 rm(new_row)
 # For polynomial, because formula is different than the other models, will need to pull out.
 var_imp_table_long <- var_imp_table_long[-grep("poly", var_imp_table_long$predictor), ]
-var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != "price",]
+var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != response,]
 var_imp_table_long$model <- as.factor(var_imp_table_long$model)
 var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
 # Some models had terms not in other models, so spread fills wide table entries with NA

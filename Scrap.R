@@ -71,13 +71,11 @@ set.seed(10)
 Z <- sample(1:2,size = n,replace = TRUE)
 Y <- ma*(Z == 1) + mb*(Z == 2) + rnorm(n)*5
 df <- data.frame(Z = as.factor(Z),X,Y)
-p <- ggplot(data = df, aes(x = X, y = Y, color = Z))
-p <- p + geom_point()
-p
+
 df1 = training = df[1:300,]
 df2 = testing  = df[301:500,]
 
-# library(rpart)
+# library(rpart) # code for Rpart
 # fit <- rpart(Z ~ X + Y, data = df1)
 # pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
 library(randomForest)
@@ -97,7 +95,11 @@ for (i in 1:length(vx)) {
 z <- as.data.frame(z)
 colnames(z) <- c("vx", "vy", "pred_z")
 df$Z <- as.integer(df$Z)
-library(RColorBrewer)
+
+p <- ggplot(data = df, aes(x = X, y = Y, color = Z))
+p <- p + geom_point()
+p
+
 p <- ggplot()
 p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z)) 
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z),

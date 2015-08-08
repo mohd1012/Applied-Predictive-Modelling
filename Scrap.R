@@ -83,28 +83,22 @@ fit <- randomForest(Z ~ X + Y, data = df1)
 pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y), type = "prob")[,2]
 vx <- seq(-3,3,length = 101)
 vy <- seq(-25,25,length = 101)
-
-z <- NULL
-for (i in 1:length(vx)) {
-  for (j in 1:length(vy)) {
-    z_pred <- pred(vx[i],vy[j])
-    new_row <- cbind(vx[i],vy[j], z_pred)
-    z <- rbind(z, new_row)
-  }
-}
-z <- as.data.frame(z)
-colnames(z) <- c("vx", "vy", "pred_z")
-df$Z <- as.integer(df$Z)
+z <- expand.grid(vx = seq(-3, 3, length = 101), vy = seq(-25, 25, length = 101), stringsAsFactors = FALSE)
+z$pred_z <- pred(z$vx, z$vy)
 
 p <- ggplot(data = df, aes(x = X, y = Y, color = Z))
 p <- p + geom_point()
+p <- p + ggtitle("Random Forests")
+p <- p + xlab("variable 1") + ylab("variable 2")
 p
 
+df$Z <- as.integer(df$Z)
 p <- ggplot()
 p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z)) 
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z),
                     pch = 21, size = 5, colour = NA)
-p  <- p + theme_bw() + ggtitle("Random Forests")
+p <- p + theme_bw() + ggtitle("Random Forests")
 p <- p + xlab("variable 1") + ylab("variable 2")
+p <- p + scale_fill_gradient()
 p
 

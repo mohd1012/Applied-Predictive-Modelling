@@ -96,21 +96,11 @@ for (i in 1:length(vx)) {
 }
 z <- as.data.frame(z)
 colnames(z) <- c("vx", "vy", "pred_z")
+df$Z <- as.integer(df$Z)
 
 p <- ggplot()
-p <- p + geom_tile(data = z, aes(x = vx, y = vy, color = pred_z)) 
-# p <- p + scale_colour_continuous(low = "red", high = "blue")
-p <- p + scale_colour_continuous(low = "white", high = "steelblue")
+p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z)) 
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z, shape = Z),
                     pch = 21, size = 5, colour = NA)
 p  <- p + theme_bw()
 p
-
-# Need to join df and z as ggplot2 is getting confused about
-# two dataframes. Different dims and no common index, so add
-# NULLs
-new_row <- NULL
-for (i in ((dim(df)[1] + 1):dim(z)[2])) {
-  new_row <- c(NA, NA, NA)
-  df <- rbind(df, new_row)
-}

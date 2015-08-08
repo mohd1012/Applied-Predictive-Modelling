@@ -104,5 +104,7 @@ p <- ggplot()
 p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z)) 
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z),
                     pch = 21, size = 5, colour = NA)
-p  <- p + theme_bw()
+p  <- p + theme_bw() + ggtitle("Random Forests")
+p <- p + xlab("variable 1") + ylab("variable 2")
 p
+

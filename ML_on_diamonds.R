@@ -315,6 +315,8 @@ model_prediction <- predict(model_list$gbm_model, data_set[,-4])
 
 # Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
+# Doddgy use of for loop and rbind. Replace with pre assigned dataframe and assigned rows
+
 make_var_imp_table_long <- function(model_list) {
   new_row <- NULL
   var_imp_table_long <- NULL
@@ -327,13 +329,14 @@ make_var_imp_table_long <- function(model_list) {
     row.names(new_row) <- NULL
     var_imp_table_long <- rbind(var_imp_table_long, new_row)
   }
+  # For polynomial, because formula is different than the other models, will need to pull out.
+  var_imp_table_long <- var_imp_table_long[-grep("poly", var_imp_table_long$predictor), ]
+  var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != response,]
+  var_imp_table_long$model <- as.factor(var_imp_table_long$model)
   return(var_imp_table_long)
 }
 var_imp_table_long <- make_var_imp_table_long(model_list)
-# For polynomial, because formula is different than the other models, will need to pull out.
-var_imp_table_long <- var_imp_table_long[-grep("poly", var_imp_table_long$predictor), ]
-var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != response,]
-var_imp_table_long$model <- as.factor(var_imp_table_long$model)
+
 var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
 # Some models had terms not in other models, so spread fills wide table entries with NA
 var_imp_table_wide[is.na(var_imp_table_wide)] <- 0.0

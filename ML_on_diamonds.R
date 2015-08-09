@@ -90,6 +90,8 @@ model_list <- list(linear_model = linear_model, polynomial_model = polynomial_mo
                    rpart_model = rpart_model, ctree_model = ctree_model, m5_model = m5_model,
                    treebag_model = treebag_model, rf_model = rf_model, gbm_model = gbm_model, cubist_model = cubist_model)
 
+rm(linear_model, polynomial_model, mars_model, svm_model, glm_model, pls_model, pcr_model, ridge_model, enet_model, nnet_model, knn_model, rpart_model, ctree_model, m5_model, treebag_model, rf_model, gbm_model, cubist_model)
+
 # Setup common caret parameters
 training_control <- trainControl(method = "cv")
 
@@ -119,7 +121,7 @@ model_list$mars_model <- train(formula,
 
 # Set up SVM tunning grid
 sigDist <- sigest(data_set_train[, response_col] ~ ., data = data_set_train, frac = 1)
-TuneGrid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
+tune_grid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 
 # Fit SVM model
 # classProbs = TRUE was added since the text was written
@@ -129,7 +131,7 @@ model_list$svm_model <- train(formula,
                    data = data_set_train,
                    method = "svmRadial",
                    preProc = c("center", "scale"),
-                   tuneGrid = TuneGrid,
+                   tuneGrid = tune_grid,
                    trControl = training_control)
 
 # Fit glm
@@ -373,8 +375,7 @@ find_number_of_clusters <- function(df) {
   p <- p + geom_point()
   return(p)
 }
-df <- var_imp_table_wide[,-1]
-plot(find_number_of_clusters(df = df))
+plot(find_number_of_clusters(df = var_imp_table_wide[,-1]))
 clusters <- kmeans(var_imp_table_wide[,-1], 4)
 clusters <- as.data.frame(as.factor(clusters$cluster))
 colnames(clusters) <- "cluster"

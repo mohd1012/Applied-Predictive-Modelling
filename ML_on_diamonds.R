@@ -321,16 +321,21 @@ model_prediction <- predict(model_list$gbm_model, data_set[,-4])
 # Make a long table for all the models and the contributions of the predictors
 # Doddgy use of for loop and rbind. Replace with pre assigned dataframe and assigned rows
 
+make_new_row <- function(model) {
+  new_row <- varImp(model)$importance
+  new_row[,2] <- new_row[,1]
+  new_row[,1] <- row.names(new_row)
+  new_row[,3] <- model$method
+  colnames(new_row) <- c("predictor", "ranking", "model")
+  row.names(new_row) <- NULL
+  return(new_row)
+}
+
 make_var_imp_table_long <- function(model_list) {
   new_row <- NULL
   var_imp_table_long <- NULL
   for (model in model_list) {
-    new_row <- varImp(model)$importance
-    new_row[,2] <- new_row[,1]
-    new_row[,1] <- row.names(new_row)
-    new_row[,3] <- model$method
-    colnames(new_row) <- c("predictor", "ranking", "model")
-    row.names(new_row) <- NULL
+    new_row <- make_new_row(model)
     var_imp_table_long <- rbind(var_imp_table_long, new_row)
   }
   # For polynomial, because formula is different than the other models, will need to pull out.
@@ -340,6 +345,7 @@ make_var_imp_table_long <- function(model_list) {
   return(var_imp_table_long)
 }
 var_imp_table_long <- make_var_imp_table_long(model_list)
+
 
 var_imp_table_wide <- spread(data = var_imp_table_long, key = predictor, value = ranking)
 # Some models had terms not in other models, so spread fills wide table entries with NA

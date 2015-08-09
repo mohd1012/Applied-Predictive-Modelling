@@ -64,6 +64,25 @@ inTrain <- createDataPartition(data_set[, response_col], p = .8)[[1]]
 data_set_train <- data_set[ inTrain, ]
 data_set_test  <- data_set[-inTrain, ]
 
+linear_model <- NULL
+polynomial_model <- NULL
+mars_model <- NULL
+svm_model <- NULL
+glm_model <- NULL
+pls_model <- NULL
+pcr_model <- NULL
+ridge_model <- NULL
+enet_model <- NULL
+nnet_model <- NULL
+knn_model <- NULL
+rpart_model <- NULL
+ctree_model <- NULL
+m5_model <- NULL
+treebag_model <- NULL
+rf_model <- NULL
+gbm_model <- NULL
+cubist_model <- NULL
+
 model_list <- list(linear_model = linear_model, polynomial_model = polynomial_model,
                    mars_model = mars_model, svm_model = svm_model, glm_model = glm_model,
                    pls_model = pls_model, pcr_model = pcr_model, ridge_model = ridge_model, 
@@ -110,7 +129,7 @@ model_list$svm_model <- train(formula,
                    data = data_set_train,
                    method = "svmRadial",
                    preProc = c("center", "scale"),
-                   tuneGrid = svmTuneGrid,
+                   tuneGrid = TuneGrid,
                    trControl = training_control)
 
 # Fit glm
@@ -256,9 +275,8 @@ model_list$gbm_model <- train(formula,
                    verbose = FALSE,
                    trControl = training_control)
 
-# Cubist
 tune_grid <- expand.grid(committees = c(1:10, 20, 50, 75, 100), 
-                      neighbors = c(0, 1, 5, 9))
+                       neighbors = c(0, 1, 5, 9))
 
 set.seed(Set_seed_seed)
 model_list$cubist_model <- train(formula, 
@@ -275,14 +293,14 @@ bwplot(resamp, metric = "Rsquared")
 dotplot(resamp, metric = "Rsquared")
 
 # Some customised model plots:
-plot(rpart_model, scales = list(x = list(log = 10)))
+plot(model_list$rpart_model, scales = list(x = list(log = 10)))
 # A line plot of the average performance. The 'scales' argument is actually an 
 # argument to xyplot that converts the x-axis to log-2 units.
-plot(svm_model, scales = list(x = list(log = 2)))
-rpart_tree <- as.party(rpart_model$finalModel)
+plot(model_list$svm_model, scales = list(x = list(log = 2)))
+rpart_tree <- as.party(model_list$rpart_model$finalModel)
 plot(rpart_tree)
-plot(ctree_model$finalModel)
-plot(cubist_model, auto.key = list(columns = 4, lines = TRUE))
+plot(model_list$ctree_model$finalModel)
+plot(model_list$cubist_model, auto.key = list(columns = 4, lines = TRUE))
 
 # Additional code for M5
 rule_fit <- M5Rules(formula, data = data_set_train, control = Weka_control(M = 10))
@@ -290,25 +308,28 @@ rule_fit
 
 # Examining fits
 model_results <- data.frame(obs = data_set[, 4],
-                            Linear_Regression = predict(linear_model, data_set[,-4]))
+                            Linear_Regression = predict(model_list$linear_model, data_set[,-4]))
 plot(model_results)
 
-model_prediction <- predict(gbm_model, data_set[,-4])
+model_prediction <- predict(model_list$gbm_model, data_set[,-4])
 
 # Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
-new_row <- NULL
-var_imp_table_long <- NULL
-for (model in model_list) {
-  new_row <- varImp(model)$importance
-  new_row[,2] <- new_row[,1]
-  new_row[,1] <- row.names(new_row)
-  new_row[,3] <- model$method
-  colnames(new_row) <- c("predictor", "ranking", "model")
-  row.names(new_row) <- NULL
-  var_imp_table_long <- rbind(var_imp_table_long, new_row)
+make_var_imp_table_long <- function(model_list) {
+  new_row <- NULL
+  var_imp_table_long <- NULL
+  for (model in model_list) {
+    new_row <- varImp(model)$importance
+    new_row[,2] <- new_row[,1]
+    new_row[,1] <- row.names(new_row)
+    new_row[,3] <- model$method
+    colnames(new_row) <- c("predictor", "ranking", "model")
+    row.names(new_row) <- NULL
+    var_imp_table_long <- rbind(var_imp_table_long, new_row)
+  }
+  return(var_imp_table_long)
 }
-rm(new_row)
+var_imp_table_long <- make_var_imp_table_long(model_list)
 # For polynomial, because formula is different than the other models, will need to pull out.
 var_imp_table_long <- var_imp_table_long[-grep("poly", var_imp_table_long$predictor), ]
 var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != response,]

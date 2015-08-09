@@ -387,14 +387,13 @@ plot(find_number_of_clusters(df = var_imp_table_wide[,-1]))
 clusters <- kmeans(var_imp_table_wide[,-1], 4)
 clusters <- as.data.frame(as.factor(clusters$cluster))
 colnames(clusters) <- "cluster"
-var_imp_table_wide <- cbind(var_imp_table_wide, clusters)
 
 # Find the principal components
 trans <- preProcess(var_imp_table_wide[,-1], method = "pca")
 PC <- predict(trans, var_imp_table_wide[,-1])
 # Add to matrix
 var_imp_table_wide <- cbind(var_imp_table_wide, PC[,1:2])
-
+var_imp_table_wide <- cbind(var_imp_table_wide, clusters)
 var_imp_table_wide <- var_imp_table_wide[order(var_imp_table_wide$cluster),]
 # Join wide table clusters to long table
 # look up model in wide, get cluster, add to long

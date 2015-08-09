@@ -112,11 +112,12 @@ model_list$polynomial_model <- train(formula_poly,
                           trControl = training_control)
 
 # Fit MARS model (Multivariate Adaptive Regression)
+tune_grid <- expand.grid(degree = 1, nprune = 2:38)
 set.seed(Set_seed_seed)
 model_list$mars_model <- train(formula,
                     data = data_set_train,
                     method = "earth",
-                    tuneGrid = expand.grid(degree = 1, nprune = 2:38),
+                    tuneGrid = tune_grid,
                     trControl = training_control)
 
 # Set up SVM tunning grid
@@ -202,13 +203,14 @@ model_list$nnet_model <- train(formula,
                     allowParallel = FALSE)
 
 # knnet
+tune_grid <- data.frame(k = 1:20)
 set.seed(Set_seed_seed)
 model_list$knn_model <- train(formula,
                    importance = TRUE,
                    data = data_set_train,
                    method = "knn",
                    preProc = c("center", "scale"),
-                   tuneGrid = data.frame(k = 1:20),
+                   tuneGrid = tune_grid,
                    trControl = training_control)
 
 # make rpart model

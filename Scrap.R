@@ -84,6 +84,7 @@ pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y), type = "pro
 vx <- seq(-3,3,length = 101)
 vy <- seq(-25,25,length = 101)
 z <- expand.grid(vx = seq(-3, 3, length = 101), vy = seq(-25, 25, length = 101), stringsAsFactors = FALSE)
+# 1/3 the speed of nested for loops
 z$pred_z <- pred(z$vx, z$vy)
 
 p <- ggplot(data = df, aes(x = X, y = Y, color = Z))

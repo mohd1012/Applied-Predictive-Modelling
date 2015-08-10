@@ -319,7 +319,6 @@ model_prediction <- predict(model_list$gbm_model, data_set[,-4])
 
 # Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
-# Doddgy use of for loop and rbind. Replace with pre assigned dataframe and assigned rows
 
 make_new_row <- function(model) {
   new_row <- varImp(model)$importance
@@ -334,11 +333,10 @@ make_new_row <- function(model) {
 make_var_imp_table_long <- function(model_list) {
   new_row <- NULL
   var_imp_table_long <- NULL
-  for (model in model_list) {
-    new_row <- make_new_row(model)
-    var_imp_table_long <- rbind(var_imp_table_long, new_row)
-  }
-  # For polynomial, because formula is different than the other models, will need to pull out.
+  var_imp_table_long <- ldply(model_list, make_new_row)
+  var_imp_table_long <- var_imp_table_long[, 2:4]
+  var_imp_table_long$model <- as.factor(var_imp_table_long$model)
+# For polynomial, because formula is different than the other models, will need to pull out.
   var_imp_table_long <- var_imp_table_long[-grep("poly", var_imp_table_long$predictor), ]
   var_imp_table_long <- var_imp_table_long[var_imp_table_long$predictor != response,]
   var_imp_table_long$model <- as.factor(var_imp_table_long$model)

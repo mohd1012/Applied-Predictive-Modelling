@@ -95,7 +95,8 @@ p
 
 df$Z <- as.integer(df$Z)
 p <- ggplot()
-p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z)) 
+p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z))
+p <- p + geom_contour(data = z, aes(x = vx, y = vy, z = pred_z), colour = "black") 
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z),
                     pch = 21, size = 5, colour = NA)
 p <- p + theme_bw() + ggtitle("Random Forests")

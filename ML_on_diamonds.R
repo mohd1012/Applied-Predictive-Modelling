@@ -53,6 +53,7 @@ formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 # Examine data
 apply(data_set, 2, skewness)
 apply(data_set, 2, min)
+aaply(.data = data_set, .margins = 2, .fun = min)
 nearZeroVar(data_set)
 featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
 pairs.panels(data_set)

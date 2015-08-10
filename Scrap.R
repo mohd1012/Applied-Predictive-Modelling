@@ -104,3 +104,6 @@ p <- p + scale_fill_gradient()
 p
 
 ################################################
+
+aaply(.data = data_set, .margins = 2, .fun = function(var) mean(var[, var], na.rm = TRUE))
+apply(X = data_set, MARGIN = 2, FUN = skewness)

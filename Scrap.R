@@ -61,6 +61,7 @@ plot(n - data_set$price)
 # from Freakonometrics: http://freakonometrics.hypotheses.org/20002
 ###################################################
 library(ggplot2)
+# Make dataset
 n <- 500
 set.seed(10)
 X <- rnorm(n)
@@ -74,37 +75,59 @@ df <- data.frame(Z = as.factor(Z),X,Y)
 
 df1 = training = df[1:300,]
 df2 = testing  = df[301:500,]
-
+#
 # library(rpart) # code for Rpart
 # fit <- rpart(Z ~ X + Y, data = df1)
 # pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y))[,1]
+# 
+# fit = glm(Z ~ X + Y,data = df1, family = binomial)
+# pred = function(x,y) {
+#   predict(fit,newdata = data.frame(X = x,Y = y), type = "response")
+# }
+# library(MASS)
+# fit = qda(Z ~ X+Y,data = df1, family = binomial)
+# pred = function(x,y) {
+#   predict(fit, newdata = data.frame(X = x,Y = y))$posterior[,2]
+# }
+#
+# library(mgcv)
+# fit = gam(Z ~ s(X,Y),data = df1,family = binomial)
+# pred = function(x,y) {
+#   predict(fit, newdata = data.frame(X = x, Y = y), type = "response")
+# }
+#
+# library(caret)
+# fit = knn3(Z ~ X + Y,data = df1, k = 9)
+# pred = function(x,y) {
+#   predict(fit,newdata = data.frame(X = x,Y = y))[,2]
+# }
+
+# Define prediction function
 library(randomForest)
 fit <- randomForest(Z ~ X + Y, data = df1)
 pred <- function(x,y) predict(fit,newdata = data.frame(X = x,Y = y), type = "prob")[,2]
+
+# Make predictions
 vx <- seq(-3,3,length = 101)
 vy <- seq(-25,25,length = 101)
 z <- expand.grid(vx = seq(-3, 3, length = 101), vy = seq(-25, 25, length = 101), stringsAsFactors = FALSE)
-# 1/3 the speed of nested for loops
 z$pred_z <- pred(z$vx, z$vy)
 
+# Plot data set
 p <- ggplot(data = df, aes(x = X, y = Y, color = Z))
 p <- p + geom_point()
 p <- p + ggtitle("Random Forests")
 p <- p + xlab("variable 1") + ylab("variable 2")
 p
 
-df$Z <- as.integer(df$Z)
+# Plot fit
 p <- ggplot()
 p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z))
-p <- p + geom_contour(data = z, aes(x = vx, y = vy, z = pred_z), colour = "black") 
-p <- p + geom_point(data = df, aes(x = X, y = Y, fill = Z),
+p <- p + geom_contour(data = z, aes(x = vx, y = vy, z = pred_z), colour = "slategrey") 
+p <- p + geom_point(data = df, aes(x = X, y = Y, fill = as.integer(Z)),
                     pch = 21, size = 5, colour = NA)
 p <- p + theme_bw() + ggtitle("Random Forests")
 p <- p + xlab("variable 1") + ylab("variable 2")
-p <- p + scale_fill_gradient()
 p
-
 ################################################
 
-aaply(.data = data_set, .margins = 2, .fun = function(var) mean(var[, var], na.rm = TRUE))
-apply(X = data_set, MARGIN = 2, FUN = skewness)

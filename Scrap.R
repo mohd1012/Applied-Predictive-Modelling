@@ -129,5 +129,12 @@ p <- p + geom_point(data = df, aes(x = X, y = Y, fill = as.integer(Z)),
 p <- p + theme_bw() + ggtitle("Random Forests")
 p <- p + xlab("variable 1") + ylab("variable 2")
 p
-################################################
 
+p <- ggplot()
+p <- p + geom_point(data = z, aes(x = vx, y = vy, colour = as.integer(2*pred_z)), pch = 15, size = 2)
+p <- p + geom_point(data = df, aes(x = X, y = Y, fill = as.integer(Z)),
+                    pch = 21, size = 5, colour = NA)
+p <- p + theme_bw() + ggtitle("Random Forests")
+p <- p + xlab("variable 1") + ylab("variable 2")
+p
+################################################

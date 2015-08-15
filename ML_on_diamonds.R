@@ -43,6 +43,10 @@ library(gam)
 # C:\Program Files\R\R-3.2.1\library\AppliedPredictiveModeling\chapters
 
 # Following segment is where you customise for a particular dataset
+# Assumes in some models, such as PLS and PCR, assumes data_set only contains
+# features and response. Otherwise, ncol calcs in several grid.expand calls will
+# be wrong.
+
 data_set <- diamonds[, c(1, 5, 6, 7, 8, 9, 10)]
 data_set <- data_set[1:1000,]
 response <- "price"
@@ -265,11 +269,12 @@ model_list$rf_model <- train(formula,
 
 # Boosted Trees
 # Added n.minobsinnode = 10 to expand grid. Seems this is now required, and 10 is a good default
-# but didn't find any reasonable limits so fixed at 10.
+# but didn't find any reasonable limits so fixed at 10. However, with small data sets, 10 will
+# to small, so set 10 or 1/6 of data set, whichever is smallest
 
 tune_grid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
                         n.trees = seq(100, 1000, by = 50),
-                        n.minobsinnode = 10,
+                        n.minobsinnode = min(floor(dim(data_set_train)[1]/5), 10),
                         shrinkage = c(0.01, 0.1))
 
 set.seed(Set_seed_seed)

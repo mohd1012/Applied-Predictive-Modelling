@@ -34,6 +34,7 @@ library(gam)
 
 # To do -
 # replace all plots with ggplot2
+# pls call need to be formula or have better column selection
 
 # Lots of code from Kuhn, M., & Johnson, K. (2013).
 # Applied Predictive Modelling. New York, USA, USA: Springer.
@@ -150,7 +151,7 @@ model_list$glm_model <- train(formula,
 # Fit partial least squares
 set.seed(Set_seed_seed)
 tune_grid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
-model_list$pls_model <- train(x = data_set_train[, -1], y = data_set_train[, 1],
+model_list$pls_model <- train(x = data_set_train[, -response_col], y = data_set_train[, response_col],
                    importance = TRUE,
                    method = "pls",
                    tuneGrid = tune_grid,

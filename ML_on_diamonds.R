@@ -33,8 +33,8 @@ library(psych)
 library(gam)
 
 # To do -
-# replace all plots with ggplot2
 # pls call need to be formula or have better column selection
+# replace ncol with numbers of variables in formula
 
 # Lots of code from Kuhn, M., & Johnson, K. (2013).
 # Applied Predictive Modelling. New York, USA, USA: Springer.
@@ -46,7 +46,7 @@ library(gam)
 # Following segment is where you customise for a particular dataset
 # Assumes in some models, such as PLS and PCR, assumes data_set only contains
 # features and response. Otherwise, ncol calcs in several grid.expand calls will
-# be wrong.
+# be wrong. PCR doesn't yet take a formula call, so need to customise
 
 data_set <- diamonds[, c(1, 5, 6, 7, 8, 9, 10)]
 data_set <- data_set[1:1000,]
@@ -318,8 +318,8 @@ rule_fit <- M5Rules(formula, data = data_set_train, control = Weka_control(M = 1
 rule_fit
 
 # Examining fits
-model_results <- data.frame(obs = data_set[, 4],
-                            Linear_Regression = predict(model_list$linear_model, data_set[,-4]))
+model_results <- data.frame(obs = data_set[, response_col],
+                            Linear_Regression = predict(model_list$linear_model, data_set))
 plot(model_results)
 
 model_prediction <- predict(model_list$gbm_model, data_set[,-4])

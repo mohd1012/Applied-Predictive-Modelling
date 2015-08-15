@@ -296,6 +296,8 @@ model_list$cubist_model <- train(formula,
                       tuneGrid = tune_grid,
                       trControl = training_control)
 
+ldply(model_list, object.size)
+
 # Plots to compare the models
 resamp <- resamples(model_list)
 summary(resamp)

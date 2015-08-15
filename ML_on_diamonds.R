@@ -127,7 +127,7 @@ model_list$mars_model <- train(formula,
                     trControl = training_control)
 
 # Set up SVM tunning grid
-sigDist <- sigest(data_set_train[, response_col] ~ ., data = data_set_train, frac = 1)
+sigDist <- sigest(x = formula, data = data_set_train, frac = 1)
 tune_grid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
 
 # Fit SVM model

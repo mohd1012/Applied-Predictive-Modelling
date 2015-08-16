@@ -409,8 +409,10 @@ clusters <- as.data.frame(as.factor(clusters$cluster))
 colnames(clusters) <- "cluster"
 
 # Find the principal components
-trans <- preProcess(var_imp_table_wide[,-1], method = "pca")
-PC <- predict(trans, var_imp_table_wide[,-1])
+
+drop_col <- nearZeroVar(var_imp_table_wide)
+trans <- preProcess(var_imp_table_wide[,-c(1, drop_col)], method = "pca")
+PC <- predict(trans, var_imp_table_wide[,-c(1, drop_col)])
 # Add to matrix
 var_imp_table_wide <- cbind(var_imp_table_wide, PC[,1:2])
 var_imp_table_wide <- cbind(var_imp_table_wide, clusters)

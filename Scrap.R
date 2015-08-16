@@ -26,33 +26,34 @@ GAM_model <- train(formula,
 
 ########################################################
 # Regression diagnostics
-n <- predict(GAM_model, data_set)
+n <- predict(model_list$rf_model, data_set)
 # Tuning Parameters: span (Span), degree (Degree)
 # tuneGrid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
 
 # Residuals vs order
-plot(n - data_set$price)
+plot(n - data_set[, response_col])
 # Predicted vs fitted values
-plot(n, data_set$price)
+plot(n, unlist(data_set[, response_col]))
 # Residuals vs features
-cor(n - data_set$price, data_set[, -grep("price", colnames(data_set))])
+cor(n - data_set[, response_col], data_set[, -response_col])
 # Predicted vs feature
-cor(n, data_set[, -grep("price", colnames(data_set))])
+cor(n, data_set[, -response_col])
 # Residual distribution
-hist(n - data_set$price)
+hist(n - unlist(data_set[, response_col]))
 qqnorm(n)
 # Scale location (sqrt of standardize residuals vs fitted values)
-plot(x = n, y = sqrt(abs(scale(n - data_set$price))))
+plot(x = n, y = sqrt(abs(scale(n - data_set[, response_col]))))
 
-mat_x <- as.matrix(data_set[, -grep("price", colnames(data_set))])
+mat_x <- as.matrix(data_set[, -response_col])
 hat_x <- mat_x %*% ginv( t(mat_x) %*% mat_x) %*% t(mat_x)
 diag_hat <- diag(hat_x)
-D <- (n - data_set$price) * diag_hat/(1 - (diag_hat %*% diag_hat))
-plot(D)
-hist(D)
-qqnorm(D)
-plot(n - data_set$price)
+plot(diag_hat)
+plot(diag_hat/(1 - (diag_hat %*% diag_hat)))
 
+D <- (n - data_set[, response_col]) * diag_hat/(1 - (diag_hat %*% diag_hat))
+plot(D[,1])
+hist(D[,1])
+qqnorm(D[,1])
 
 ###################################################
 # Blog postings

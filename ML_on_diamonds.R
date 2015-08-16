@@ -296,14 +296,27 @@ model_list$cubist_model <- train(formula,
                       tuneGrid = tune_grid,
                       trControl = training_control)
 
-ldply(model_list, object.size)
-
 # Plots to compare the models
 resamp <- resamples(model_list)
 summary(resamp)
 parallelplot(resamp, metric = "Rsquared")
 bwplot(resamp, metric = "Rsquared")
 dotplot(resamp, metric = "Rsquared")
+
+# Started code for R2 vs model size
+model_size <- ldply(model_list, object.size)
+x <- resamp$values[seq(3, length(resamp$values), 2)]
+x <- apply(x, 2, mean)
+x <- cbind(x, model_size)
+colnames(x) <- c("R2", "model", "size")
+rownames(x) <- x$model
+
+p <- ggplot(data = x, aes(x = R2, y = size, label = model))
+p <- p + geom_point()
+p <- p + geom_text()
+p <- p + coord_trans(y = "log2")
+p <- p + ggtitle("Which models are efficient at giving good predictions?")
+p
 
 # Some customised model plots:
 plot(model_list$rpart_model, scales = list(x = list(log = 10)))

@@ -33,18 +33,11 @@ library(psych)
 library(gam)
 
 # To do -
-# pls call need to be formula or have better column selection
+# pls call needs to be formula or have better column selection
 # replace ncol with numbers of variables in formula
 
-# Lots of code from Kuhn, M., & Johnson, K. (2013).
-# Applied Predictive Modelling. New York, USA, USA: Springer.
-
-# create dataset and base formula
-# scriptLocation()
-# C:\Program Files\R\R-3.2.1\library\AppliedPredictiveModeling\chapters
-
 # Following segment is where you customise for a particular dataset
-# Assumes in some models, such as PLS and PCR, assumes data_set only contains
+# Assumes in some models, such as PLS and PCR, that data_set only contains
 # features and response. Otherwise, ncol calcs in several grid.expand calls will
 # be wrong. PCR doesn't yet take a formula call, so need to customise
 

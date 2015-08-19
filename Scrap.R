@@ -6,7 +6,10 @@ library(lattice)
 library(ggplot2)
 library(caret)
 
-# crashes when I uncomment the tuneGrid = tuneGrid line. Maybe impossible values?
+# crashes when I uncomment the tuneGrid = tuneGrid line.
+# http://stackoverflow.com/questions/32043010/r-crashes-when-training-using-caret-and-method-gamloess
+# Bug in foreach package
+
 Set_seed_seed <- 100
 data_set <- diamonds[, c(1, 5, 6, 7, 8, 9, 10)]
 data_set <- data_set[1:1000,]
@@ -21,8 +24,6 @@ GAM_model <- train(formula,
                       trControl = training_control
                    )
 
-# http://topepo.github.io/caret/Generalized_Additive_Model.html
-# Tuning Parameters: span (Span), degree (Degree)
 
 ########################################################
 # Regression diagnostics

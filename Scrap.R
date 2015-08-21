@@ -8,14 +8,14 @@ library(caret)
 
 # crashes when I uncomment the tuneGrid = tuneGrid line.
 # http://stackoverflow.com/questions/32043010/r-crashes-when-training-using-caret-and-method-gamloess
-# Bug in foreach package
+# Bug in GAM package. Can't have degree  = 2.
 
 Set_seed_seed <- 100
 data_set <- diamonds[, c(1, 5, 6, 7, 8, 9, 10)]
 data_set <- data_set[1:1000,]
 formula <- price ~ carat + depth + table + x + y + z
 training_control <- trainControl(method = "cv", allowParallel = FALSE)
-tune_grid <- expand.grid(span = seq(0.1, 0.9, length = 9), degree = seq(1, 2, length = 2))
+tune_grid <- expand.grid(span = seq(0.1, 0.9, length = 9), degree = 1)
 set.seed(Set_seed_seed)
 GAM_model <- train(formula,
                       data = data_set,

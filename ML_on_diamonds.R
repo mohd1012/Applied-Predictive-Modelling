@@ -31,10 +31,12 @@ library(party)
 library(tidyr)
 library(psych)
 library(gam)
+library(GGally)
 
 # To do -
 # pls call needs to be formula or have better column selection
 # replace ncol with numbers of variables in formula
+# variable contributions doesn't seem to be working for GAMlowess
 
 # Following segment is where you customise for a particular dataset
 # Assumes in some models, such as PLS and PCR, that data_set only contains
@@ -51,18 +53,24 @@ formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 # Examine data
 
 # check atleast min and skew
-summary_stat <- adply(.data = data_set, .margins = 2, .fun = min)
-colnames(summary_stat) <- c("feature", "min")
-p <- ggplot(data = summary_stat, aes(x = feature, y = min))
-p <- p + geom_bar(stat = "identity")
-p
+plot_summary <- function(data_set, func) {
+  summary_stat <- adply(.data = data_set, .margins = 2, .fun = func)
+  colnames(summary_stat) <- c("feature", "summary_stat")
+  p <- ggplot(data = summary_stat, aes(x = feature, y = summary_stat))
+  p <- p + geom_bar(stat = "identity")
+  p
+}
+
+plot_summary(data_set, min)
 
 nearZeroVar(data_set)
 featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
-pairs.panels(data_set)
+
+ggpairs(data_set)
 
 Set_seed_seed <- 100
 # Create test and training sets
+
 set.seed(Set_seed_seed)
 inTrain <- createDataPartition(data_set[, response_col], p = .8)[[1]]
 data_set_train <- data_set[ inTrain, ]

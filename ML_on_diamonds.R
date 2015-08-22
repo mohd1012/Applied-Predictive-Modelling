@@ -62,11 +62,21 @@ plot_summary <- function(data_set, func) {
 }
 
 plot_summary(data_set, min)
+plot_summary(data_set, skew)
 
 nearZeroVar(data_set)
-featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
 
-ggpairs(data_set)
+feature_plot <- function(data_set, response) {
+  mtmelt <<- melt(data_set, id = response)
+  p <- ggplot(mtmelt, aes(x = value, y = mtmelt[, 1])) +
+    facet_wrap(~variable, scales = "free") +
+    geom_point() +
+    labs(y = response)
+  p
+}
+feature_plot(data_set, response)
+rm(mtmelt)
+# alternative: featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
 
 Set_seed_seed <- 100
 # Create test and training sets

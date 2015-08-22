@@ -49,9 +49,14 @@ formula <- price ~ carat + depth + table + x + y + z
 formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 
 # Examine data
-apply(data_set, 2, skewness)
-apply(data_set, 2, min)
-aaply(.data = data_set, .margins = 2, .fun = min)
+
+# check atleast min and skew
+summary_stat <- adply(.data = data_set, .margins = 2, .fun = min)
+colnames(summary_stat) <- c("feature", "min")
+p <- ggplot(data = summary_stat, aes(x = feature, y = min))
+p <- p + geom_bar(stat = "identity")
+p
+
 nearZeroVar(data_set)
 featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
 pairs.panels(data_set)
@@ -81,15 +86,17 @@ treebag_model <- NULL
 rf_model <- NULL
 gbm_model <- NULL
 cubist_model <- NULL
+GAM_model <- NULL
 
 model_list <- list(linear_model = linear_model, polynomial_model = polynomial_model,
                    mars_model = mars_model, svm_model = svm_model, glm_model = glm_model,
                    pls_model = pls_model, pcr_model = pcr_model, ridge_model = ridge_model, 
                    enet_model = enet_model, nnet_model = nnet_model, knn_model = knn_model,
                    rpart_model = rpart_model, ctree_model = ctree_model, m5_model = m5_model,
-                   treebag_model = treebag_model, rf_model = rf_model, gbm_model = gbm_model, cubist_model = cubist_model)
+                   treebag_model = treebag_model, rf_model = rf_model, gbm_model = gbm_model,
+                   cubist_model = cubist_model, GAM_model = GAM_model)
 
-rm(linear_model, polynomial_model, mars_model, svm_model, glm_model, pls_model, pcr_model, ridge_model, enet_model, nnet_model, knn_model, rpart_model, ctree_model, m5_model, treebag_model, rf_model, gbm_model, cubist_model)
+rm(linear_model, polynomial_model, mars_model, svm_model, glm_model, pls_model, pcr_model, ridge_model, enet_model, nnet_model, knn_model, rpart_model, ctree_model, m5_model, treebag_model, rf_model, gbm_model, cubist_model, GAM_model)
 
 # Setup common caret parameters
 training_control <- trainControl(method = "cv")
@@ -288,6 +295,17 @@ model_list$cubist_model <- train(formula,
                       method = "cubist",
                       tuneGrid = tune_grid,
                       trControl = training_control)
+
+tune_grid <- expand.grid(span = seq(0.1, 0.9, length = 9), degree = 1)
+
+set.seed(Set_seed_seed)
+model_list$GAM_model <- train(formula,
+                   data = data_set,
+                   method = "gamLoess", 
+                   tuneGrid = tune_grid,
+                   trControl = training_control
+)
+
 
 # Plots to compare the models
 resamp <- resamples(model_list)

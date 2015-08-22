@@ -6,6 +6,21 @@ library(lattice)
 library(ggplot2)
 library(caret)
 
+# check atleast min and skew
+summary_stat <- adply(.data = data_set, .margins = 2, .fun = min)
+colnames(summary_stat) <- c("feature", "min")
+p <- ggplot(data = summary_stat, aes(x = feature, y = min))
+p <- p + geom_bar(stat = "identity")
+p
+
+summary_stat <- adply(.data = data_set, .margins = 2, .fun = skew)
+colnames(summary_stat) <- c("feature", "skew")
+p <- ggplot(data = summary_stat, aes(x = feature, y = skew))
+p <- p + geom_bar(stat = "identity")
+p
+
+
+
 # crashes when I uncomment the tuneGrid = tuneGrid line.
 # http://stackoverflow.com/questions/32043010/r-crashes-when-training-using-caret-and-method-gamloess
 # Bug in GAM package. Can't have degree  = 2.

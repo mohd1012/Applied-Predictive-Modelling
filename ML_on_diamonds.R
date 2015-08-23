@@ -411,13 +411,15 @@ p
 mat_x <- as.matrix(data_set[, -response_col])
 hat_x <- mat_x %*% ginv( t(mat_x) %*% mat_x) %*% t(mat_x)
 diag_hat <- diag(hat_x)
-plot(diag_hat)
-plot(diag_hat/(1 - (diag_hat %*% diag_hat)))
+D <- (model_results$prediction - model_results$obs) * diag_hat/(1 - (diag_hat %*% diag_hat))
+D <- as.data.frame(D)
+D$order <- 1:dim(D)[1]
+plot(D$D)
 
-D <- (model_results$prediction - data_set[, response_col]) * diag_hat/(1 - (diag_hat %*% diag_hat))
-plot(D)
-hist(D)
-qqnorm(D)
+p <- ggplot(data = D, aes(x = order, y = D))
+p <- p + geom_point()
+p <- p + ggtitle("D - Impact") + labs(x = "order", y = "D")
+p
 
 ####################################################################################################
 # Examine predictor contributions across all models.

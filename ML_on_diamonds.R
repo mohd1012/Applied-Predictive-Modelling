@@ -33,6 +33,7 @@ library(psych)
 library(gam)
 library(GGally)
 library(reshape2)
+library(MASS)
 
 # To do -
 # pls call needs to be formula or have better column selection
@@ -325,7 +326,6 @@ model_list$GAM_model <- train(formula,
                    trControl = training_control
 )
 
-
 # Plots to compare the models
 resamp <- resamples(model_list)
 summary(resamp)
@@ -348,13 +348,51 @@ p <- p + coord_trans(y = "log2")
 p <- p + ggtitle("Which models are efficient at giving good predictions?")
 p
 
-# Examining fits
+#########################################################################################
+# Examining fits for rf_model
+
 model_results <- data.frame(obs = data_set[, response_col],
-                            Linear_Regression = predict(model_list$linear_model, data_set))
-plot(model_results)
+                            prediction = predict(model_list$rf_model, data_set), order = 1:dim(data_set)[1])
 
-model_prediction <- predict(model_list$gbm_model, data_set[,-4])
+# Prediction vs observation order
+p <- ggplot(data = model_results, aes(x = order, y = prediction))
+p <- p + geom_point() + ggtitle("Prediction vs observation order")
+p
 
+# Residuals vs order
+p <- ggplot(data = model_results, aes(x = order, y = model_results$prediction - data_set[, response_col]))
+p <- p + geom_point() + labs(y = "residual")
+p
+
+
+
+
+
+plot(model_results$prediction - data_set[, response_col])
+# Predicted vs fitted values
+plot(model_results$prediction, unlist(data_set[, response_col]))
+# Residuals vs features
+cor(model_results$prediction - data_set[, response_col], data_set[, -response_col])
+# Predicted vs feature
+cor(model_results$prediction, data_set[, -response_col])
+# Residual distribution
+hist(model_results$prediction - unlist(data_set[, response_col]))
+qqnorm(model_results$prediction)
+# Scale location (sqrt of standardize residuals vs fitted values)
+plot(x = model_results$prediction, y = sqrt(abs(scale(model_results$prediction - data_set[, response_col]))))
+
+mat_x <- as.matrix(data_set[, -response_col])
+hat_x <- mat_x %*% ginv( t(mat_x) %*% mat_x) %*% t(mat_x)
+diag_hat <- diag(hat_x)
+plot(diag_hat)
+plot(diag_hat/(1 - (diag_hat %*% diag_hat)))
+
+D <- (model_results$prediction - data_set[, response_col]) * diag_hat/(1 - (diag_hat %*% diag_hat))
+plot(D)
+hist(D)
+qqnorm(D)
+
+####################################################################################################
 # Examine predictor contributions across all models.
 # Make a long table for all the models and the contributions of the predictors
 

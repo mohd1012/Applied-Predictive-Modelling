@@ -39,6 +39,7 @@ library(MASS)
 # pls call needs to be formula or have better column selection
 # replace ncol with numbers of variables in formula
 # variable contributions doesn't seem to be working for GAMlowess
+# check through all generated data frames to see if I can combine any of them
 
 # Following segment is where you customise for a particular dataset
 # Assumes in some models, such as PLS and PCR, that data_set only contains
@@ -396,7 +397,9 @@ p <- p + geom_histogram()
 p <- p + ggtitle("Histogram of residuals") + labs(x = "residuals", y = "count")
 p
 
-qqnorm(model_results$prediction)
+# qq plot of model predictions
+qplot(sample = model_results$prediction, stat = "qq")
+
 # Scale location (sqrt of standardize residuals vs fitted values)
 plot(x = model_results$prediction, y = sqrt(abs(scale(model_results$prediction - data_set[, response_col]))))
 

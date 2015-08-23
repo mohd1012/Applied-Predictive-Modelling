@@ -398,7 +398,10 @@ p <- p + ggtitle("Histogram of residuals") + labs(x = "residuals", y = "count")
 p
 
 # qq plot of model predictions
-qplot(sample = model_results$prediction, stat = "qq")
+model_results$residuals <- model_results$obs - model_results$prediction
+p <- ggplot(data = model_results, aes(sample = residuals))
+p <- p + stat_qq()
+p
 
 # Scale location (sqrt of standardize residuals vs fitted values)
 plot(x = model_results$prediction, y = sqrt(abs(scale(model_results$prediction - data_set[, response_col]))))

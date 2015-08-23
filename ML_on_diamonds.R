@@ -364,7 +364,7 @@ p
 # Residuals vs order
 p <- ggplot(data = model_results, aes(x = order, y = model_results$prediction - data_set[, response_col]))
 p <- p + geom_point()
-p <- ggtitle("Residuals vs order") + labs(x = "order", y = "residual")
+p <- p + ggtitle("Residuals vs order") + labs(x = "order", y = "residual")
 p
 
 # Predicted vs fitted values
@@ -376,7 +376,6 @@ p
 # Predicted vs feature
 model_cors <- as.data.frame(t(cor(model_results$prediction, data_set[, -response_col])))
 model_cors$feature <- rownames(model_cors)
-plot(model_cors)
 colnames(model_cors) <- c("cor", "feature")
 p <- ggplot(data = model_cors, aes(x = feature, y = cor))
 p <- p + geom_bar(stat = "identity")
@@ -384,7 +383,6 @@ p <- p + ggtitle("Correlation of predictions with feature") + labs(x = "feature"
 p
 
 # Residuals vs features
-cor(model_results$prediction - model_results$obs, data_set[, -response_col])
 model_cors$resids <- t(cor(model_results$prediction - model_results$obs, data_set[, -response_col]))
 p <- ggplot(data = model_cors, aes(x = feature, y = resids))
 p <- p + geom_bar(stat = "identity")
@@ -404,7 +402,11 @@ p <- p + stat_qq()
 p
 
 # Scale location (sqrt of standardize residuals vs fitted values)
-plot(x = model_results$prediction, y = sqrt(abs(scale(model_results$prediction - data_set[, response_col]))))
+model_results$scale_location <- sqrt(abs(scale(model_results$prediction - model_results$obs)))
+p <- ggplot(data = model_results, aes(x = prediction, y = scale_location))
+p <- p + geom_point()
+p <- p + ggtitle("scale-location of residuals") + labs(x = "prediction", y = "sqrt(abs err)")
+p
 
 mat_x <- as.matrix(data_set[, -response_col])
 hat_x <- mat_x %*% ginv( t(mat_x) %*% mat_x) %*% t(mat_x)

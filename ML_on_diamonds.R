@@ -32,6 +32,7 @@ library(tidyr)
 library(psych)
 library(gam)
 library(GGally)
+library(reshape2)
 
 # To do -
 # pls call needs to be formula or have better column selection

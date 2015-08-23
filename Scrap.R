@@ -123,3 +123,16 @@ p <- p + theme_bw() + ggtitle("Random Forests")
 p <- p + xlab("variable 1") + ylab("variable 2")
 p
 ################################################
+# Some customised model plots:
+plot(model_list$rpart_model, scales = list(x = list(log = 10)))
+# A line plot of the average performance. The 'scales' argument is actually an 
+# argument to xyplot that converts the x-axis to log-2 units.
+plot(model_list$svm_model, scales = list(x = list(log = 2)))
+rpart_tree <- as.party(model_list$rpart_model$finalModel)
+plot(rpart_tree)
+plot(model_list$ctree_model$finalModel)
+plot(model_list$cubist_model, auto.key = list(columns = 4, lines = TRUE))
+
+# Additional code for M5
+rule_fit <- M5Rules(formula, data = data_set_train, control = Weka_control(M = 10))
+rule_fit

@@ -333,34 +333,20 @@ parallelplot(resamp, metric = "Rsquared")
 bwplot(resamp, metric = "Rsquared")
 dotplot(resamp, metric = "Rsquared")
 
-# Started code for R2 vs model size
+# Code for R2 vs model size
 model_size <- ldply(model_list, object.size)
-x <- resamp$values[seq(3, length(resamp$values), 2)]
-x <- apply(x, 2, mean)
-x <- cbind(x, model_size)
-colnames(x) <- c("R2", "model", "size")
-rownames(x) <- x$model
+size_and_fit <- resamp$values[seq(3, length(resamp$values), 2)]
+size_and_fit <- apply(size_and_fit, 2, mean)
+size_and_fit <- cbind(size_and_fit, model_size)
+colnames(size_and_fit) <- c("R2", "model", "size")
+rownames(size_and_fit) <- size_and_fit$model
 
-p <- ggplot(data = x, aes(x = R2, y = size, label = model))
+p <- ggplot(data = size_and_fit, aes(x = R2, y = size, label = model))
 p <- p + geom_point()
 p <- p + geom_text()
 p <- p + coord_trans(y = "log2")
 p <- p + ggtitle("Which models are efficient at giving good predictions?")
 p
-
-# Some customised model plots:
-plot(model_list$rpart_model, scales = list(x = list(log = 10)))
-# A line plot of the average performance. The 'scales' argument is actually an 
-# argument to xyplot that converts the x-axis to log-2 units.
-plot(model_list$svm_model, scales = list(x = list(log = 2)))
-rpart_tree <- as.party(model_list$rpart_model$finalModel)
-plot(rpart_tree)
-plot(model_list$ctree_model$finalModel)
-plot(model_list$cubist_model, auto.key = list(columns = 4, lines = TRUE))
-
-# Additional code for M5
-rule_fit <- M5Rules(formula, data = data_set_train, control = Weka_control(M = 10))
-rule_fit
 
 # Examining fits
 model_results <- data.frame(obs = data_set[, response_col],

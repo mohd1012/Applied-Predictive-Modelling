@@ -372,14 +372,24 @@ p <- p + geom_point()
 p <- p + ggtitle("Predicted vs fitted values") + labs(x = "obs", y = "prediction")
 p
 
-
-plot(model_results$prediction, unlist(data_set[, response_col]))
 # Residuals vs features
-cor(model_results$prediction - data_set[, response_col], data_set[, -response_col])
+cor(model_results$prediction - model_results$obs, data_set[, -response_col])
+
+
+
 # Predicted vs feature
 cor(model_results$prediction, data_set[, -response_col])
+model_cors <- as.data.frame(t(cor(model_results$prediction, data_set[, -response_col])))
+model_cors$feature <- rownames(model_cors)
+plot(model_cors)
+colnames(model_cors) <- c("cor", "feature")
+
 # Residual distribution
-hist(model_results$prediction - unlist(data_set[, response_col]))
+p <- ggplot(data = model_results, aes(x = prediction - obs))
+p <- p + geom_histogram()
+p <- p + ggtitle("Histogram of residuals") + labs(x = "residuals", y = "count")
+p
+
 qqnorm(model_results$prediction)
 # Scale location (sqrt of standardize residuals vs fitted values)
 plot(x = model_results$prediction, y = sqrt(abs(scale(model_results$prediction - data_set[, response_col]))))

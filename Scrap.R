@@ -95,3 +95,29 @@ plot(model_list$cubist_model, auto.key = list(columns = 4, lines = TRUE))
 # Additional code for M5
 rule_fit <- M5Rules(formula, data = data_set_train, control = Weka_control(M = 10))
 rule_fit
+
+##################################################3
+# gamLoess varImp failure
+library(ggplot2)
+library(lattice)
+library(caret)
+library(splines)
+library(foreach)
+library(gam)
+
+data_set <- diamonds[1:1000, c(1, 5, 6, 7, 8, 9, 10)]
+formula <- price ~ carat + depth + table + x + y + z
+
+training_control <- trainControl(method = "cv")
+
+tune_grid <- expand.grid(span = seq(0.1, 0.9, length = 9), degree = 1)
+
+set.seed(100)
+GAM_model <- train(formula,
+                   data = data_set,
+                   method = "gamLoess", 
+                   tuneGrid = tune_grid,
+                   trControl = training_control)
+varImp(GAM_model)
+
+

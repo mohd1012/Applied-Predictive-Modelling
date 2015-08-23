@@ -1,11 +1,3 @@
-# Fit lowess
-library(splines)
-library(foreach)
-library(gam)
-library(lattice)
-library(ggplot2)
-library(caret)
-
 ###################################################
 # Blog postings
 # Charpentier, A. (2015, July 21). Choosing a classifier.

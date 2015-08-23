@@ -11,8 +11,6 @@ library(caret)
 ########################################################
 # Regression diagnostics
 n <- predict(model_list$rf_model, data_set)
-# Tuning Parameters: span (Span), degree (Degree)
-# tuneGrid <- expand.grid(ncomp = 1:(ncol(data_set_train) - 2))
 
 # Residuals vs order
 plot(n - data_set[, response_col])

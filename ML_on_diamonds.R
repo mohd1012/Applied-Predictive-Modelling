@@ -149,7 +149,7 @@ model_list$mars_model <- train(formula,
 # Set up SVM tunning grid
 sigDist <- sigest(x = formula, data = data_set_train, frac = 1)
 tune_grid <- data.frame(sigma = as.vector(sigDist)[1], C = 2 ^ (-2:7))
-
+rm(sigDist)
 # Fit SVM model
 # classProbs = TRUE was added since the text was written
 set.seed(Set_seed_seed)
@@ -356,20 +356,23 @@ model_results <- data.frame(obs = data_set[, response_col],
 
 # Prediction vs observation order
 p <- ggplot(data = model_results, aes(x = order, y = prediction))
-p <- p + geom_point() + ggtitle("Prediction vs observation order")
+p <- p + geom_point()
+p <- p + ggtitle("Prediction vs observation order") + labs(x = "order", y = "prediction")
 p
 
 # Residuals vs order
 p <- ggplot(data = model_results, aes(x = order, y = model_results$prediction - data_set[, response_col]))
-p <- p + geom_point() + labs(y = "residual")
+p <- p + geom_point()
+p <- ggtitle("Residuals vs order") + labs(x = "order", y = "residual")
+p
+
+# Predicted vs fitted values
+p <- ggplot(data = model_results, aes(x = obs, y = prediction))
+p <- p + geom_point()
+p <- p + ggtitle("Predicted vs fitted values") + labs(x = "obs", y = "prediction")
 p
 
 
-
-
-
-plot(model_results$prediction - data_set[, response_col])
-# Predicted vs fitted values
 plot(model_results$prediction, unlist(data_set[, response_col]))
 # Residuals vs features
 cor(model_results$prediction - data_set[, response_col], data_set[, -response_col])

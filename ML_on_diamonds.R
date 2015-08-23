@@ -372,17 +372,23 @@ p <- p + geom_point()
 p <- p + ggtitle("Predicted vs fitted values") + labs(x = "obs", y = "prediction")
 p
 
-# Residuals vs features
-cor(model_results$prediction - model_results$obs, data_set[, -response_col])
-
-
-
 # Predicted vs feature
-cor(model_results$prediction, data_set[, -response_col])
 model_cors <- as.data.frame(t(cor(model_results$prediction, data_set[, -response_col])))
 model_cors$feature <- rownames(model_cors)
 plot(model_cors)
 colnames(model_cors) <- c("cor", "feature")
+p <- ggplot(data = model_cors, aes(x = feature, y = cor))
+p <- p + geom_bar(stat = "identity")
+p <- p + ggtitle("Correlation of predictions with feature") + labs(x = "feature", y = "correlation")
+p
+
+# Residuals vs features
+cor(model_results$prediction - model_results$obs, data_set[, -response_col])
+model_cors$resids <- t(cor(model_results$prediction - model_results$obs, data_set[, -response_col]))
+p <- ggplot(data = model_cors, aes(x = feature, y = resids))
+p <- p + geom_bar(stat = "identity")
+p <- p + ggtitle("Correlation of residuals with feature") + labs(x = "feature", y = "correlation of residual")
+p
 
 # Residual distribution
 p <- ggplot(data = model_results, aes(x = prediction - obs))

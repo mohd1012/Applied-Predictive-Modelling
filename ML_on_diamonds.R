@@ -373,7 +373,7 @@ p <- p + geom_point()
 p <- p + ggtitle("Predicted vs fitted values") + labs(x = "obs", y = "prediction")
 p
 
-# Predicted vs feature
+# Correlation of predicted vs feature
 model_cors <- as.data.frame(t(cor(model_results$prediction, data_set[, -response_col])))
 model_cors$feature <- rownames(model_cors)
 colnames(model_cors) <- c("cor", "feature")
@@ -382,12 +382,24 @@ p <- p + geom_bar(stat = "identity")
 p <- p + ggtitle("Correlation of predictions with feature") + labs(x = "feature", y = "correlation")
 p
 
-# Residuals vs features
+# Correlation of residuals vs features
 model_cors$resids <- t(cor(model_results$prediction - model_results$obs, data_set[, -response_col]))
 p <- ggplot(data = model_cors, aes(x = feature, y = resids))
 p <- p + geom_bar(stat = "identity")
 p <- p + ggtitle("Correlation of residuals with feature") + labs(x = "feature", y = "correlation of residual")
 p
+
+# Residuals vs features
+data_set_residuals <- data_set
+data_set_residuals$residual <- data_set_residuals$price - predict(model_list$rf_model, data_set_residuals)
+
+mtmelt <<- melt(data_set_residuals, id = "residual")
+p <- ggplot(mtmelt, aes(x = value, y = residual)) +
+  facet_wrap(~variable, scales = "free") +
+  geom_point() +
+  labs(y = "residual")
+p
+
 
 # Residual distribution
 p <- ggplot(data = model_results, aes(x = prediction - obs))
@@ -414,7 +426,6 @@ diag_hat <- diag(hat_x)
 D <- (model_results$prediction - model_results$obs) * diag_hat/(1 - (diag_hat %*% diag_hat))
 D <- as.data.frame(D)
 D$order <- 1:dim(D)[1]
-plot(D$D)
 
 p <- ggplot(data = D, aes(x = order, y = D))
 p <- p + geom_point()

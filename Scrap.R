@@ -84,6 +84,7 @@ p <- p + xlab("variable 1") + ylab("variable 2")
 p
 ################################################
 # Some customised model plots:
+plot(GAM_model, metric = "Rsquared")
 plot(model_list$rpart_model, scales = list(x = list(log = 10)))
 # A line plot of the average performance. The 'scales' argument is actually an 
 # argument to xyplot that converts the x-axis to log-2 units.
@@ -116,9 +117,12 @@ tune_grid <- expand.grid(span = seq(0.1, 0.9, length = 9), degree = 1)
 set.seed(100)
 GAM_model <- train(formula,
                    data = data_set,
+                   importance = TRUE,
                    method = "gamLoess", 
                    tuneGrid = tune_grid,
                    trControl = training_control)
 varImp(GAM_model)
 
-
+# varImp returns importances of zero or NaN
+# Checked span on 0.1 width strips from 0.1 to 0.2 through to 0.9 to 1.0
+# Adding importance = TRUE to train call did not help

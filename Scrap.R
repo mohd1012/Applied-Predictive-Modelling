@@ -67,7 +67,8 @@ p
 # Plot fit
 p <- ggplot()
 p <- p + geom_tile(data = z, aes(x = vx, y = vy, fill = pred_z))
-p <- p + geom_contour(data = z, aes(x = vx, y = vy, z = pred_z), colour = "slategrey") 
+p <- p + scale_fill_gradient(low = "gray90", high = "blue")
+# p <- p + geom_contour(data = z, aes(x = vx, y = vy, z = pred_z), colour = "slategrey") 
 p <- p + geom_point(data = df, aes(x = X, y = Y, fill = as.integer(Z)),
                     pch = 21, size = 5, colour = NA)
 p <- p + theme_bw() + ggtitle("Random Forests")

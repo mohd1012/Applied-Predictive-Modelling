@@ -520,14 +520,14 @@ p <- p + geom_text(position = position_jitter(height = 0.5, width = 0.5), hjust 
 p
 
 # code for feature selection. Methods supported are below:
-  # caretFuncs - exist for
-  # lmFuncs
-  # rfFuncs
-  # treebagFuncs
-  # ldaFuncs
-  # nbFuncs
-  # gamFuncs
-  # lrFuncs
+# caretFuncs - exist for
+# lmFuncs
+# rfFuncs
+# treebagFuncs
+# ldaFuncs
+# nbFuncs
+# gamFuncs
+# lrFuncs
 
 feature_selection_control <- rfeControl(functions = rfFuncs)
 ctrl <- rfeControl(functions = lmFuncs,

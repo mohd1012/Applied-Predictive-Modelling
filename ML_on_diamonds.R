@@ -32,13 +32,14 @@ plot_summary <- function(data_set, func) {
   colnames(summary_stat) <- c("feature", "summary_stat")
   p <- ggplot(data = summary_stat, aes(x = feature, y = summary_stat))
   p <- p + geom_bar(stat = "identity")
+  p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
   p
 }
 
 plot_summary(data_set, min)
 plot_summary(data_set, skew)
 
-nearZeroVar(data_set)
+colnames(data_set)[nearZeroVar(data_set)]
 
 feature_plot <- function(data_set, response) {
   mtmelt <<- melt(data_set, id = response)
@@ -323,6 +324,8 @@ p
 #########################################################################################
 # Examining fits for rf_model
 
+
+
 model_results <- data.frame(obs = data_set[, response_col],
                             prediction = predict(model_list$rf_model, data_set), order = 1:dim(data_set)[1])
 
@@ -351,6 +354,7 @@ colnames(model_cors) <- c("cor", "feature")
 p <- ggplot(data = model_cors, aes(x = feature, y = cor))
 p <- p + geom_bar(stat = "identity")
 p <- p + ggtitle("Correlation of predictions with feature") + labs(x = "feature", y = "correlation")
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
 
 # Correlation of residuals vs features
@@ -358,6 +362,7 @@ model_cors$resids <- t(cor(model_results$prediction - model_results$obs, data_se
 p <- ggplot(data = model_cors, aes(x = feature, y = resids))
 p <- p + geom_bar(stat = "identity")
 p <- p + ggtitle("Correlation of residuals with feature") + labs(x = "feature", y = "correlation of residual")
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
 
 # Residuals vs features
@@ -378,10 +383,11 @@ p <- p + geom_histogram()
 p <- p + ggtitle("Histogram of residuals") + labs(x = "residuals", y = "count")
 p
 
-# qq plot of model predictions
+# qq plot of model residuals
 model_results$residuals <- model_results$obs - model_results$prediction
 p <- ggplot(data = model_results, aes(sample = residuals))
 p <- p + stat_qq()
+p <- p + ggtitle("Model residuals")
 p
 
 # Scale location (sqrt of standardize residuals vs fitted values)
@@ -494,6 +500,7 @@ with(var_imp_table_long,
 p <- ggplot(data = var_imp_table_long, aes(x = predictor, y = ranking))
 p <- p + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~cluster)
 p <- p + ggtitle("feature contributions to clusters")
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
 
 p <- ggplot(var_imp_table_long, aes(x = predictor, y = model, cluster))

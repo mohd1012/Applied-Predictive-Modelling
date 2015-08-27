@@ -1,39 +1,10 @@
-library(AppliedPredictiveModeling)
-library(ggplot2)
-library(lattice)
-library(nlme)
-library(mgcv)
-library(caret)
-library(plotrix)
-library(TeachingDemos)
-library(plotmo)
-library(e1071)
-library(earth)
-library(kernlab)
-library(corrplot)
-library(pls)
-library(lars)
-library(elasticnet)
-library(nnet)
-library(rpart)
-library(grid)
-library(partykit)
-library(RWeka)
-library(plyr)
-library(ipred)
-library(randomForest)
-library(survival)
-library(splines)
-library(parallel)
-library(gbm)
-library(Cubist)
-library(party)
-library(tidyr)
-library(psych)
-library(gam)
-library(GGally)
-library(reshape2)
-library(MASS)
+pkgs <- list( 'AppliedPredictiveModeling', 'ggplot2', 'lattice', 'nlme', 'mgcv', 
+             'caret', 'plotrix', 'TeachingDemos', 'plotmo', 'e1071',  'earth',
+             'kernlab',  'corrplot', 'pls', 'lars', 'elasticnet', 'nnet', 'rpart',
+             'grid', 'partykit', 'RWeka', 'plyr', 'ipred', 'randomForest',  'survival',
+             'splines',  'parallel',  'gbm',  'Cubist', 'party', 'tidyr', 'psych',
+             'gam', 'GGally', 'reshape2', 'MASS')
+lapply(pkgs, library, character.only = T)
 
 # To do -
 # pls call needs to be formula or have better column selection

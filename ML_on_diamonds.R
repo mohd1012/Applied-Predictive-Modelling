@@ -391,6 +391,7 @@ p <- p + geom_point()
 p <- p + ggtitle("scale-location of residuals") + labs(x = "prediction", y = "sqrt(abs err)")
 p
 
+# Still hacking hat and D code
 mat_x <- as.matrix(data_set[, -response_col])
 hat_x <- mat_x %*% ginv( t(mat_x) %*% mat_x) %*% t(mat_x)
 diag_hat <- diag(hat_x)

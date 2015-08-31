@@ -545,6 +545,8 @@ x <- x[, y]
 x <- gather(x)
 x$key <- unlist(strsplit(split = "~", as.character(x$key)))[seq(from =  1, to = 2*length(x$key), by = 2)]
 x$key <- as.factor(x$key)
+summary <- ddply(.data = x, .variables = c("key"), summarise, median(value))
+
 
 p <- ggplot(data = x, aes(x = key, y = value))
 p <- p + geom_boxplot()
@@ -552,3 +554,12 @@ p <- p + geom_point()
 p <- p + theme(axis.text.x = element_text(angle = -90))
 p
 
+
+
+
+cdata <- ddply(dataNA, c("sex", "condition"), summarise,
+               N    = sum(!is.na(change)),
+               mean = mean(change, na.rm=TRUE),
+               sd   = sd(change, na.rm=TRUE),
+               se   = sd / sqrt(N)
+)

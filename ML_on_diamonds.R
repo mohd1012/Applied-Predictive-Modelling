@@ -4,7 +4,7 @@ pkgs <- list( 'AppliedPredictiveModeling', 'ggplot2', 'lattice', 'nlme', 'mgcv',
              'grid', 'partykit', 'RWeka', 'plyr', 'ipred', 'randomForest',  'survival',
              'splines',  'parallel',  'gbm',  'Cubist', 'party', 'tidyr', 'psych',
              'gam', 'GGally', 'reshape2', 'MASS')
-lapply(pkgs, library, character.only = T)
+invisible(lapply(pkgs, library, character.only = T))
 
 # To do -
 # pls call needs to be formula or have better column selection

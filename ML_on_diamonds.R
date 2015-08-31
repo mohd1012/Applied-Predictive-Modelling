@@ -540,9 +540,15 @@ rf_features <- rfe(formula, data = data_set_train,
 
 
 x <- resamp$values
-# x <- as.data.frame(unlist(x))
-# colnames(x) <- c("value")
-# x$value <- as.numeric(x$value)
 y <- grep("Rsquared", colnames(x))
 x <- x[, y]
-boxplot(x)
+x <- gather(x)
+x$key <- unlist(strsplit(split = "~", as.character(x$key)))[seq(from =  1, to = 2*length(x$key), by = 2)]
+x$key <- as.factor(x$key)
+
+p <- ggplot(data = x, aes(x = key, y = value))
+p <- p + geom_boxplot()
+p <- p + geom_point()
+p <- p + theme(axis.text.x = element_text(angle = -90))
+p
+

@@ -539,5 +539,10 @@ rf_features <- rfe(formula, data = data_set_train,
                  rfeControl = feature_selection_control)
 
 
-
-
+x <- resamp$values
+# x <- as.data.frame(unlist(x))
+# colnames(x) <- c("value")
+# x$value <- as.numeric(x$value)
+y <- grep("Rsquared", colnames(x))
+x <- x[, y]
+boxplot(x)

@@ -554,10 +554,5 @@ p <- ggplot(data = x, aes(x = method, y = R2))
 p <- p + geom_boxplot()
 p <- p + geom_point()
 p <- p + theme(axis.text.x = element_text(angle = -90))
+p <- p + coord_cartesian(ylim=c(0.99, 1.0)) 
 p
-
-levels(x$method)
-
-method_levels <- names(cyl_table)[order(cyl_table)]
-mtcars$cyl2 <- factor(mtcars$cyl, levels = cyl_levels)
-

@@ -301,10 +301,33 @@ model_list$GAM_model <- train(formula,
 
 # Plots to compare the models
 resamp <- resamples(model_list)
+
+resamp_plot <- function (resamp_df) {
+  resamp_df <- resamp$values
+  resamp_df <- resamp_df[, grep("Rsquared", colnames(resamp_df))]
+  resamp_df <- gather(resamp_df)
+  colnames(resamp_df) <- c("method", "R2")
+  resamp_df$method <- unlist(strsplit(split = "~", as.character(resamp_df$method)))[seq(from =  1, to = 2*length(resamp_df$method), by = 2)]
+  resamp_df$method <- as.factor(resamp_df$method)
+  summary <- ddply(.data = resamp_df, .variables = c("method"), summarise, median(R2))
+  colnames(summary) <- c("method", "median")
+  resamp_df <- merge(resamp_df, summary, by = "method")
+  resamp_df$method <- factor(resamp_df$method,levels(resamp_df$method)[order(summary$median)])
+  
+  p <- ggplot(data = resamp_df, aes(x = method, y = R2))
+  p <- p + geom_boxplot()
+  p <- p + geom_point()
+  p <- p + theme(axis.text.x = element_text(angle = -90))
+  p <- p + coord_cartesian(ylim = c(min(resamp_df$R2), 1.0)) 
+  p <- p + ggtitle("")
+  p
+}
+resamp_plot(resamp_df)
+
 summary(resamp)
-parallelplot(resamp, metric = "Rsquared")
-bwplot(resamp, metric = "Rsquared")
-dotplot(resamp, metric = "Rsquared")
+# parallelplot(resamp, metric = "Rsquared")
+# bwplot(resamp, metric = "Rsquared")
+# dotplot(resamp, metric = "Rsquared")
 
 # Code for R2 vs model size
 model_size <- ldply(model_list, object.size)
@@ -539,20 +562,4 @@ rf_features <- rfe(formula, data = data_set_train,
                  rfeControl = feature_selection_control)
 
 
-resamp_df <- resamp$values
-resamp_df <- resamp_df[, grep("Rsquared", colnames(resamp_df))]
-resamp_df <- gather(resamp_df)
-colnames(resamp_df) <- c("method", "R2")
-resamp_df$method <- unlist(strsplit(split = "~", as.character(resamp_df$method)))[seq(from =  1, to = 2*length(resamp_df$method), by = 2)]
-resamp_df$method <- as.factor(resamp_df$method)
-summary <- ddply(.data = resamp_df, .variables = c("method"), summarise, median(R2))
-colnames(summary) <- c("method", "median")
-resamp_df <- merge(resamp_df, summary, by = "method")
-resamp_df$method <- factor(resamp_df$method,levels(resamp_df$method)[order(summary$median)])
 
-p <- ggplot(data = resamp_df, aes(x = method, y = R2))
-p <- p + geom_boxplot()
-p <- p + geom_point()
-p <- p + theme(axis.text.x = element_text(angle = -90))
-p <- p + coord_cartesian(ylim=c(0.9, 1.0)) 
-p <- p + ggtitle("")

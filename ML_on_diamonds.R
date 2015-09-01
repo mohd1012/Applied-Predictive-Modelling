@@ -540,26 +540,24 @@ rf_features <- rfe(formula, data = data_set_train,
 
 
 x <- resamp$values
-y <- grep("Rsquared", colnames(x))
-x <- x[, y]
+x <- x[, grep("Rsquared", colnames(x))]
 x <- gather(x)
-x$key <- unlist(strsplit(split = "~", as.character(x$key)))[seq(from =  1, to = 2*length(x$key), by = 2)]
-x$key <- as.factor(x$key)
-summary <- ddply(.data = x, .variables = c("key"), summarise, median(value))
+colnames(x) <- c("method", "R2")
+x$method <- unlist(strsplit(split = "~", as.character(x$method)))[seq(from =  1, to = 2*length(x$method), by = 2)]
+x$method <- as.factor(x$method)
+summary <- ddply(.data = x, .variables = c("method"), summarise, median(R2))
+colnames(summary) <- c("method", "median")
+x <- merge(x, summary, by = "method")
+x$method = factor(x$method,levels(x$method)[order(summary$median)])
 
-
-p <- ggplot(data = x, aes(x = key, y = value))
+p <- ggplot(data = x, aes(x = method, y = R2))
 p <- p + geom_boxplot()
 p <- p + geom_point()
 p <- p + theme(axis.text.x = element_text(angle = -90))
 p
 
+levels(x$method)
 
+method_levels <- names(cyl_table)[order(cyl_table)]
+mtcars$cyl2 <- factor(mtcars$cyl, levels = cyl_levels)
 
-
-cdata <- ddply(dataNA, c("sex", "condition"), summarise,
-               N    = sum(!is.na(change)),
-               mean = mean(change, na.rm=TRUE),
-               sd   = sd(change, na.rm=TRUE),
-               se   = sd / sqrt(N)
-)

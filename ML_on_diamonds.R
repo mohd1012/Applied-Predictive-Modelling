@@ -539,20 +539,20 @@ rf_features <- rfe(formula, data = data_set_train,
                  rfeControl = feature_selection_control)
 
 
-x <- resamp$values
-x <- x[, grep("Rsquared", colnames(x))]
-x <- gather(x)
-colnames(x) <- c("method", "R2")
-x$method <- unlist(strsplit(split = "~", as.character(x$method)))[seq(from =  1, to = 2*length(x$method), by = 2)]
-x$method <- as.factor(x$method)
-summary <- ddply(.data = x, .variables = c("method"), summarise, median(R2))
+resamp_df <- resamp$values
+resamp_df <- resamp_df[, grep("Rsquared", colnames(resamp_df))]
+resamp_df <- gather(resamp_df)
+colnames(resamp_df) <- c("method", "R2")
+resamp_df$method <- unlist(strsplit(split = "~", as.character(resamp_df$method)))[seq(from =  1, to = 2*length(resamp_df$method), by = 2)]
+resamp_df$method <- as.factor(resamp_df$method)
+summary <- ddply(.data = resamp_df, .variables = c("method"), summarise, median(R2))
 colnames(summary) <- c("method", "median")
-x <- merge(x, summary, by = "method")
-x$method = factor(x$method,levels(x$method)[order(summary$median)])
+resamp_df <- merge(resamp_df, summary, by = "method")
+resamp_df$method <- factor(resamp_df$method,levels(resamp_df$method)[order(summary$median)])
 
-p <- ggplot(data = x, aes(x = method, y = R2))
+p <- ggplot(data = resamp_df, aes(x = method, y = R2))
 p <- p + geom_boxplot()
 p <- p + geom_point()
 p <- p + theme(axis.text.x = element_text(angle = -90))
-p <- p + coord_cartesian(ylim=c(0.99, 1.0)) 
-p
+p <- p + coord_cartesian(ylim=c(0.9, 1.0)) 
+p <- p + ggtitle("")

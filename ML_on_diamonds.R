@@ -305,8 +305,9 @@ model_list$GAM_model <- train(formula,
 
 # Plots to compare the models
 resamp <- resamples(model_list)
+summary(resamp)
 
-resamp_plot <- function (resamp_df) {
+resamp_plot <- function (resamp) {
   resamp_df <- resamp$values
   resamp_df <- resamp_df[, grep("Rsquared", colnames(resamp_df))]
   resamp_df <- gather(resamp_df)
@@ -326,9 +327,9 @@ resamp_plot <- function (resamp_df) {
   p <- p + ggtitle("")
   p
 }
-resamp_plot(resamp_df)
+p_resamp <- resamp_plot(resamp)
+p_resamp
 
-summary(resamp)
 # parallelplot(resamp, metric = "Rsquared")
 # bwplot(resamp, metric = "Rsquared")
 # dotplot(resamp, metric = "Rsquared")
@@ -346,7 +347,8 @@ p <- p + geom_point()
 p <- p + geom_text()
 p <- p + coord_trans(y = "log2")
 p <- p + ggtitle("Which models are efficient at giving good predictions?")
-p
+p_model_size <- p
+p_model_size
 
 #########################################################################################
 # Examining fits for rf_model
@@ -360,13 +362,15 @@ model_results <- data.frame(obs = data_set[, response_col],
 p <- ggplot(data = model_results, aes(x = order, y = prediction))
 p <- p + geom_point()
 p <- p + ggtitle("Prediction vs observation order") + labs(x = "order", y = "prediction")
-p
+p_pred_vs_order <- p
+p_pred_vs_order
 
 # Residuals vs order
 p <- ggplot(data = model_results, aes(x = order, y = model_results$prediction - data_set[, response_col]))
 p <- p + geom_point()
 p <- p + ggtitle("Residuals vs order") + labs(x = "order", y = "residual")
-p
+p_resid_vs_order <- p
+p_resid_vs_order
 
 # Predicted vs fitted values
 p <- ggplot(data = model_results, aes(x = obs, y = prediction))
@@ -566,4 +570,20 @@ rf_features <- rfe(formula, data = data_set_train,
                  rfeControl = feature_selection_control)
 
 
+resamp_df <- resamp$values
+resamp_df <- resamp_df[, grep("Rsquared", colnames(resamp_df))]
+resamp_df <- gather(resamp_df)
+colnames(resamp_df) <- c("method", "R2")
+resamp_df$method <- unlist(strsplit(split = "~", as.character(resamp_df$method)))[seq(from =  1, to = 2*length(resamp_df$method), by = 2)]
+resamp_df$method <- as.factor(resamp_df$method)
+summary <- ddply(.data = resamp_df, .variables = c("method"), summarise, median(R2))
+colnames(summary) <- c("method", "median")
+resamp_df <- merge(resamp_df, summary, by = "method")
+resamp_df$method <- factor(resamp_df$method,levels(resamp_df$method)[order(summary$median)])
 
+p <- ggplot(data = resamp_df, aes(x = method, y = R2))
+p <- p + geom_boxplot()
+p <- p + geom_point()
+p <- p + theme(axis.text.x = element_text(angle = -90))
+p <- p + coord_cartesian(ylim=c(0.9, 1.0)) 
+p <- p + ggtitle("")

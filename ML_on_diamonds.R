@@ -36,8 +36,11 @@ plot_summary <- function(data_set, func) {
   p
 }
 
-plot_summary(data_set, min)
-plot_summary(data_set, skew)
+p_min <- plot_summary(data_set, min)
+p_skew <- plot_summary(data_set, skew)
+p_na <- plot_summary(data_set, function(x) sum(is.na(x)))
+
+p_min;p_skew;p_na
 
 colnames(data_set)[nearZeroVar(data_set)]
 
@@ -49,7 +52,8 @@ feature_plot <- function(data_set, response) {
     labs(y = response)
   p
 }
-feature_plot(data_set, response)
+p_feature <- feature_plot(data_set, response)
+p_feature
 rm(mtmelt)
 # alternative: featurePlot(x = data_set[,-response_col], y = data_set[,response_col])
 

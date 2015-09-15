@@ -376,7 +376,8 @@ p_resid_vs_order
 p <- ggplot(data = model_results, aes(x = obs, y = prediction))
 p <- p + geom_point()
 p <- p + ggtitle("Predicted vs fitted values") + labs(x = "obs", y = "prediction")
-p
+p_pred_vs_fitted <- p
+p_pred_vs_fitted
 
 # Correlation of predicted vs feature
 model_cors <- as.data.frame(t(cor(model_results$prediction, data_set[, -response_col])))
@@ -386,7 +387,8 @@ p <- ggplot(data = model_cors, aes(x = feature, y = cor))
 p <- p + geom_bar(stat = "identity")
 p <- p + ggtitle("Correlation of predictions with feature") + labs(x = "feature", y = "correlation")
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-p
+p_pred_vs_feature <- p
+p_pred_vs_feature 
 
 # Correlation of residuals vs features
 model_cors$resids <- t(cor(model_results$prediction - model_results$obs, data_set[, -response_col]))
@@ -394,7 +396,8 @@ p <- ggplot(data = model_cors, aes(x = feature, y = resids))
 p <- p + geom_bar(stat = "identity")
 p <- p + ggtitle("Correlation of residuals with feature") + labs(x = "feature", y = "correlation of residual")
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-p
+p_resid_corr_features <- p
+p_resid_corr_features
 
 # Residuals vs features
 data_set_residuals <- data_set
@@ -405,28 +408,31 @@ p <- ggplot(mtmelt, aes(x = value, y = residual)) +
   facet_wrap(~variable, scales = "free") +
   geom_point() +
   labs(y = "residual")
-p
-
+p_residuals_vs_features <- p
+p_residuals_vs_features
 
 # Residual distribution
 p <- ggplot(data = model_results, aes(x = prediction - obs))
 p <- p + geom_histogram()
 p <- p + ggtitle("Histogram of residuals") + labs(x = "residuals", y = "count")
-p
+p_residual_dist <- p
+p_residual_dist
 
 # qq plot of model residuals
 model_results$residuals <- model_results$obs - model_results$prediction
 p <- ggplot(data = model_results, aes(sample = residuals))
 p <- p + stat_qq()
 p <- p + ggtitle("Model residuals")
-p
+p_residuals_qq <- p
+p_residuals_qq
 
 # Scale location (sqrt of standardize residuals vs fitted values)
 model_results$scale_location <- sqrt(abs(scale(model_results$prediction - model_results$obs)))
 p <- ggplot(data = model_results, aes(x = prediction, y = scale_location))
 p <- p + geom_point()
 p <- p + ggtitle("scale-location of residuals") + labs(x = "prediction", y = "sqrt(abs err)")
-p
+p_scale_location <- p
+p_scale_location
 
 # Still hacking hat and D code
 mat_x <- as.matrix(data_set[, -response_col])
@@ -532,7 +538,8 @@ p <- ggplot(data = var_imp_table_long, aes(x = predictor, y = ranking))
 p <- p + geom_bar(stat = "identity", position = "dodge") + facet_wrap(~cluster)
 p <- p + ggtitle("feature contributions to clusters")
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-p
+p_feature_contributions_to_clusters <- p
+p_feature_contributions_to_clusters
 
 p <- ggplot(var_imp_table_long, aes(x = predictor, y = model, cluster))
 p <- p + geom_tile(aes(fill = ranking), colour = "white")
@@ -541,14 +548,16 @@ p <- p + theme(panel.background = element_rect(fill = 'white'),
                panel.grid.major = element_blank(),
                panel.border = element_blank())
 p <- p + ggtitle("ctree, avNNet, enet, knn, M5, pcr, ridge, svmRadial use a model free method")
-p
+p_var_contributions <- p
+p_var_contributions
 
 p <- ggplot(data = var_imp_table_wide, aes(x = PC1, y = PC2, colour = cluster, label = rownames(var_imp_table_wide)))
 p <- p + geom_point(size = 5)
 p <- p + scale_colour_brewer(palette = "Set1")
 p <- p + ggtitle("Feature contribution by kmeans clustering")
 p <- p + geom_text(position = position_jitter(height = 0.5, width = 0.5), hjust = 0, vjust = -1)
-p
+p_feature_contributions_kmeans <- p
+p_feature_contributions_kmeans
 
 # code for feature selection. Methods supported are below:
 # caretFuncs - exist for
@@ -570,20 +579,3 @@ rf_features <- rfe(formula, data = data_set_train,
                  rfeControl = feature_selection_control)
 
 
-resamp_df <- resamp$values
-resamp_df <- resamp_df[, grep("Rsquared", colnames(resamp_df))]
-resamp_df <- gather(resamp_df)
-colnames(resamp_df) <- c("method", "R2")
-resamp_df$method <- unlist(strsplit(split = "~", as.character(resamp_df$method)))[seq(from =  1, to = 2*length(resamp_df$method), by = 2)]
-resamp_df$method <- as.factor(resamp_df$method)
-summary <- ddply(.data = resamp_df, .variables = c("method"), summarise, median(R2))
-colnames(summary) <- c("method", "median")
-resamp_df <- merge(resamp_df, summary, by = "method")
-resamp_df$method <- factor(resamp_df$method,levels(resamp_df$method)[order(summary$median)])
-
-p <- ggplot(data = resamp_df, aes(x = method, y = R2))
-p <- p + geom_boxplot()
-p <- p + geom_point()
-p <- p + theme(axis.text.x = element_text(angle = -90))
-p <- p + coord_cartesian(ylim=c(0.9, 1.0)) 
-p <- p + ggtitle("")

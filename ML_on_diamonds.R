@@ -559,6 +559,8 @@ p <- p + geom_text(position = position_jitter(height = 0.5, width = 0.5), hjust 
 p_feature_contributions_kmeans <- p
 p_feature_contributions_kmeans
 
+
+
 # code for feature selection. Methods supported are below:
 # caretFuncs - exist for
 # lmFuncs
@@ -578,4 +580,7 @@ ctrl <- rfeControl(functions = lmFuncs,
 rf_features <- rfe(formula, data = data_set_train,
                  rfeControl = feature_selection_control)
 
+# Plot all plots in one go
+plot_names <- ls()[ldply(.data = ls(), .fun = function(x) substr(x, 1, 2)) == "p_"]
+invisible(lapply(X = plot_names, FUN = function(x) plot(get(x))))
 

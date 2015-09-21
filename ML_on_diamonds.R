@@ -5,7 +5,6 @@ pkgs <- list( 'AppliedPredictiveModeling', 'ggplot2', 'lattice', 'nlme', 'mgcv',
              'splines',  'parallel',  'gbm',  'Cubist', 'party', 'tidyr', 'psych',
              'gam', 'GGally', 'reshape2', 'MASS')
 invisible(lapply(pkgs, library, character.only = T))
-invisible(ldply(.data = pkgs, .fun = library, character.only = T))
 # To do -
 # pls call needs to be formula or have better column selection
 # replace ncol with numbers of variables in formula

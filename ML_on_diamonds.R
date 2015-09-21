@@ -5,7 +5,7 @@ pkgs <- list( 'AppliedPredictiveModeling', 'ggplot2', 'lattice', 'nlme', 'mgcv',
              'splines',  'parallel',  'gbm',  'Cubist', 'party', 'tidyr', 'psych',
              'gam', 'GGally', 'reshape2', 'MASS')
 invisible(lapply(pkgs, library, character.only = T))
-
+invisible(ldply(.data = pkgs, .fun = library, character.only = T))
 # To do -
 # pls call needs to be formula or have better column selection
 # replace ncol with numbers of variables in formula
@@ -582,5 +582,4 @@ rf_features <- rfe(formula, data = data_set_train,
 
 # Plot all plots in one go
 plot_names <- ls()[ldply(.data = ls(), .fun = function(x) substr(x, 1, 2)) == "p_"]
-invisible(lapply(X = plot_names, FUN = function(x) plot(get(x))))
-
+ldply(.data = plot_names, .fun = function(x) plot(get(x)))

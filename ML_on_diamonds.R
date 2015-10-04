@@ -26,18 +26,19 @@ formula_poly <- price ~ poly(carat, depth, table, x, y, z, degree = 2)
 # Examine data
 
 # check atleast min and skew
-plot_summary <- function(data_set, func) {
+plot_summary <- function(data_set, func, title) {
   summary_stat <- adply(.data = data_set, .margins = 2, .fun = func)
   colnames(summary_stat) <- c("feature", "summary_stat")
   p <- ggplot(data = summary_stat, aes(x = feature, y = summary_stat))
   p <- p + geom_bar(stat = "identity")
   p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  p <- p + ggtitle(title)
   p
 }
 
-p_min <- plot_summary(data_set, min)
-p_skew <- plot_summary(data_set, skew)
-p_na <- plot_summary(data_set, function(x) sum(is.na(x)))
+p_min <- plot_summary(data_set, min, "min")
+p_skew <- plot_summary(data_set, skew, "skew")
+p_na <- plot_summary(data_set, function(x) sum(is.na(x)/length(x)), "% missing")
 
 p_min;p_skew;p_na
 

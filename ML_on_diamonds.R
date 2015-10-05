@@ -3,7 +3,7 @@ pkgs <- list( 'AppliedPredictiveModeling', 'ggplot2', 'lattice', 'nlme', 'mgcv',
              'kernlab',  'corrplot', 'pls', 'lars', 'elasticnet', 'nnet', 'rpart',
              'grid', 'partykit', 'RWeka', 'plyr', 'ipred', 'randomForest',  'survival',
              'splines',  'parallel',  'gbm',  'Cubist', 'party', 'tidyr', 'psych',
-             'gam', 'GGally', 'reshape2', 'MASS')
+             'gam', 'GGally', 'reshape2', 'MASS', 'VIM')
 invisible(lapply(pkgs, library, character.only = T))
 # To do -
 # pls call needs to be formula or have better column selection
@@ -41,6 +41,8 @@ p_skew <- plot_summary(data_set, skew, "skew")
 p_na <- plot_summary(data_set, function(x) sum(is.na(x)/length(x)), "% missing")
 
 p_min;p_skew;p_na
+
+p_missing <- aggr(data_set, col = c('navyblue','red'), numbers = TRUE, sortVars = TRUE, labels = names(data), cex.axis = .7, gap = 3, ylab = c("Histogram of missing data","Pattern"))
 
 colnames(data_set)[nearZeroVar(data_set)]
 
